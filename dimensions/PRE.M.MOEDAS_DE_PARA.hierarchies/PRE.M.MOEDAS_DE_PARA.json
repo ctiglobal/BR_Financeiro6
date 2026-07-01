@@ -1,0 +1,16 @@
+{
+	"@type":"Hierarchy",
+	"Name":"PRE.M.MOEDAS_DE_PARA",
+	"Elements":
+	[
+		{
+			"Name":"Valor",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"Taxa",
+			"Type":"Numeric"
+		}
+	],
+	"Subsets@Code.links":[]
+}

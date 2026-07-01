@@ -1,0 +1,14 @@
+{
+	"@type":"Subset",
+	"Name":"FinalMesAnterior",
+	"Alias":"MEMBER_NAME",
+	"Elements":
+	[
+		{
+			"@id":"Dimensions('BAL.M.BALANCO')/Hierarchies('BAL.M.BALANCO')/Elements('Final do Mes')"
+		},
+		{
+			"@id":"Dimensions('BAL.M.BALANCO')/Hierarchies('BAL.M.BALANCO')/Elements('Final do Mes Anterior')"
+		}
+	]
+}

@@ -1,0 +1,28 @@
+{
+	"@type":"Hierarchy",
+	"Name":"REC.M.RECEITAS",
+	"Elements":
+	[
+		{
+			"Name":"Período atual",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"Acumulado do ano",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"Período anterior",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"Acumulado do ano anteriro",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"Mesmo período Ano Anterior",
+			"Type":"Numeric"
+		}
+	],
+	"Subsets@Code.links":[]
+}

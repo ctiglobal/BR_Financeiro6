@@ -1,0 +1,45 @@
+{
+	"@type":"MDXView",
+	"Name":"Balanço Hora Extra",
+	"MDX@Code.link":"Balanço Hora Extra.mdx",
+	"Meta" : 
+	{
+		"Aliases" : 
+		{
+			"[ALL.D.CONTAS_CONTABEIS].[ALL.D.CONTAS_CONTABEIS]" : "Descrição",
+			"[ALL.D.MES].[ALL.D.MES]" : "NomeMes",
+			"[ALL.D.MOEDAS].[ALL.D.MOEDAS]" : "NomeMoeda"
+		},
+		"ContextSets" : 
+		{
+			"[ALL.D.MOEDAS].[ALL.D.MOEDAS]" : 
+			{
+				"IsPublic" : true,
+				"SubsetName" : "Default"
+			},
+			"[ALL.D.MOEDA_VERSAO].[ALL.D.MOEDA_VERSAO]" : 
+			{
+				"Expression" : "{[ALL.D.MOEDA_VERSAO].[ALL.D.MOEDA_VERSAO].[Taxa Real], [ALL.D.MOEDA_VERSAO].[ALL.D.MOEDA_VERSAO].[Taxa Planejamento]}"
+			},
+			"[ALL.D.VERSAO].[ALL.D.VERSAO]" : 
+			{
+				"IsPublic" : true,
+				"SubsetName" : "Padrão"
+			},
+			"[BAL.M.BALANCO].[BAL.M.BALANCO]" : 
+			{
+				"Expression" : "{[BAL.M.BALANCO].[BAL.M.BALANCO].[Final do Mes], [BAL.M.BALANCO].[BAL.M.BALANCO].[Final do Mes Anterior], [BAL.M.BALANCO].[BAL.M.BALANCO].[Movimento do Período], [BAL.M.BALANCO].[BAL.M.BALANCO].[Final do Mes Ano Anterior]}"
+			}
+		},
+		"ExpandAboves" : 
+		{
+			"[ALL.D.ANO].[ALL.D.ANO]" : false,
+			"[ALL.D.CONTAS_CONTABEIS].[ALL.D.CONTAS_CONTABEIS]" : false,
+			"[ALL.D.MES].[ALL.D.MES]" : false,
+			"[ALL.D.MOEDAS].[ALL.D.MOEDAS]" : false,
+			"[ALL.D.MOEDA_VERSAO].[ALL.D.MOEDA_VERSAO]" : false,
+			"[ALL.D.VERSAO].[ALL.D.VERSAO]" : false,
+			"[BAL.M.BALANCO].[BAL.M.BALANCO]" : false
+		}
+	}
+}

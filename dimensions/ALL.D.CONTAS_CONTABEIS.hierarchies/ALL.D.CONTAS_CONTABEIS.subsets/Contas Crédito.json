@@ -1,0 +1,47 @@
+{
+	"@type":"Subset",
+	"Name":"Contas Crédito",
+	"Alias":"Descrição",
+	"Elements":
+	[
+		{
+			"@id":"Dimensions('ALL.D.CONTAS_CONTABEIS')/Hierarchies('ALL.D.CONTAS_CONTABEIS')/Elements('1205')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.CONTAS_CONTABEIS')/Hierarchies('ALL.D.CONTAS_CONTABEIS')/Elements('1515')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.CONTAS_CONTABEIS')/Hierarchies('ALL.D.CONTAS_CONTABEIS')/Elements('1525')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.CONTAS_CONTABEIS')/Hierarchies('ALL.D.CONTAS_CONTABEIS')/Elements('1545')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.CONTAS_CONTABEIS')/Hierarchies('ALL.D.CONTAS_CONTABEIS')/Elements('2100')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.CONTAS_CONTABEIS')/Hierarchies('ALL.D.CONTAS_CONTABEIS')/Elements('2180')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.CONTAS_CONTABEIS')/Hierarchies('ALL.D.CONTAS_CONTABEIS')/Elements('2350')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.CONTAS_CONTABEIS')/Hierarchies('ALL.D.CONTAS_CONTABEIS')/Elements('2410')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.CONTAS_CONTABEIS')/Hierarchies('ALL.D.CONTAS_CONTABEIS')/Elements('2')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.CONTAS_CONTABEIS')/Hierarchies('ALL.D.CONTAS_CONTABEIS')/Elements('3000')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.CONTAS_CONTABEIS')/Hierarchies('ALL.D.CONTAS_CONTABEIS')/Elements('3100')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.CONTAS_CONTABEIS')/Hierarchies('ALL.D.CONTAS_CONTABEIS')/Elements('3110')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.CONTAS_CONTABEIS')/Hierarchies('ALL.D.CONTAS_CONTABEIS')/Elements('3')"
+		}
+	]
+}

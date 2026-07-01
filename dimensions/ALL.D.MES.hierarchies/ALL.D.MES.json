@@ -1,0 +1,367 @@
+{
+	"@type":"Hierarchy",
+	"Name":"ALL.D.MES",
+	"Elements":
+	[
+		{
+			"Name":"M0",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"Total do Ano",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"T1",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"M1",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"M2",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"M3",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"T2",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"M4",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"M5",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"M6",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"T3",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"M7",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"M8",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"M9",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"T4",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"M10",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"M11",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"M12",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"YTD T1",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"YTD T2",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"YTD T3",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"YTD T4",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"YTD M12",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"YTD M11",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"YTD M10",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"YTD M9",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"YTD M8",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"YTD M7",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"YTD M6",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"YTD M5",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"YTD M4",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"YTD M3",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"YTD M2",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"YTD M1",
+			"Type":"Consolidated"
+		}
+	],
+	"Edges":
+	[
+		{
+			"ParentName":"Total do Ano",
+			"ComponentName":"T1",
+			"Weight":1
+		},
+		{
+			"ParentName":"Total do Ano",
+			"ComponentName":"T2",
+			"Weight":1
+		},
+		{
+			"ParentName":"Total do Ano",
+			"ComponentName":"T3",
+			"Weight":1
+		},
+		{
+			"ParentName":"Total do Ano",
+			"ComponentName":"T4",
+			"Weight":1
+		},
+		{
+			"ParentName":"T1",
+			"ComponentName":"M1",
+			"Weight":1
+		},
+		{
+			"ParentName":"T1",
+			"ComponentName":"M2",
+			"Weight":1
+		},
+		{
+			"ParentName":"T1",
+			"ComponentName":"M3",
+			"Weight":1
+		},
+		{
+			"ParentName":"T2",
+			"ComponentName":"M4",
+			"Weight":1
+		},
+		{
+			"ParentName":"T2",
+			"ComponentName":"M5",
+			"Weight":1
+		},
+		{
+			"ParentName":"T2",
+			"ComponentName":"M6",
+			"Weight":1
+		},
+		{
+			"ParentName":"T3",
+			"ComponentName":"M7",
+			"Weight":1
+		},
+		{
+			"ParentName":"T3",
+			"ComponentName":"M8",
+			"Weight":1
+		},
+		{
+			"ParentName":"T3",
+			"ComponentName":"M9",
+			"Weight":1
+		},
+		{
+			"ParentName":"T4",
+			"ComponentName":"M10",
+			"Weight":1
+		},
+		{
+			"ParentName":"T4",
+			"ComponentName":"M11",
+			"Weight":1
+		},
+		{
+			"ParentName":"T4",
+			"ComponentName":"M12",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD T1",
+			"ComponentName":"YTD M3",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD T2",
+			"ComponentName":"YTD M6",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD T3",
+			"ComponentName":"YTD M9",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD T4",
+			"ComponentName":"YTD M12",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD M12",
+			"ComponentName":"M12",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD M12",
+			"ComponentName":"YTD M11",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD M11",
+			"ComponentName":"M11",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD M11",
+			"ComponentName":"YTD M10",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD M10",
+			"ComponentName":"M10",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD M10",
+			"ComponentName":"YTD M9",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD M9",
+			"ComponentName":"M9",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD M9",
+			"ComponentName":"YTD M8",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD M8",
+			"ComponentName":"M8",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD M8",
+			"ComponentName":"YTD M7",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD M7",
+			"ComponentName":"M7",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD M7",
+			"ComponentName":"YTD M6",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD M6",
+			"ComponentName":"M6",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD M6",
+			"ComponentName":"YTD M5",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD M5",
+			"ComponentName":"M5",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD M5",
+			"ComponentName":"YTD M4",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD M4",
+			"ComponentName":"M4",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD M4",
+			"ComponentName":"YTD M3",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD M3",
+			"ComponentName":"M3",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD M3",
+			"ComponentName":"YTD M2",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD M2",
+			"ComponentName":"M2",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD M2",
+			"ComponentName":"YTD M1",
+			"Weight":1
+		},
+		{
+			"ParentName":"YTD M1",
+			"ComponentName":"M1",
+			"Weight":1
+		}
+	],
+	"Subsets@Code.links":
+	[
+		"ALL.D.MES.subsets/Meses.json",
+		"ALL.D.MES.subsets/Meses Total.json",
+		"ALL.D.MES.subsets/Trimestres.json"
+	]
+}

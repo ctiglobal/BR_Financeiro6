@@ -1,0 +1,13 @@
+{
+	"@type":"Subset",
+	"Name":"Padrão",
+	"Elements":
+	[
+		{
+			"@id":"Dimensions('ALL.D.VERSAO')/Hierarchies('ALL.D.VERSAO')/Elements('Realizado')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.VERSAO')/Hierarchies('ALL.D.VERSAO')/Elements('Orçamento V1')"
+		}
+	]
+}

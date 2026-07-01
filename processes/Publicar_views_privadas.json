@@ -1,0 +1,27 @@
+{
+	"@type":"Process",
+	"Name":"Publicar_views_privadas",
+	"HasSecurityAccess":true,
+	"Code@Code.link":"Publicar_views_privadas.ti",
+	"UIData":"CubeAction=1511\fDataAction=1503\fCubeLogChanges=0\f",
+	"DataSource":
+	{
+		"Type":"None"
+	},
+	"Parameters":
+	[
+		{
+			"Name":"pCube",
+			"Prompt":"Digite o nome do Cubo:",
+			"Value":"",
+			"Type":"String"
+		},
+		{
+			"Name":"pView",
+			"Prompt":"Digite o nome da View:",
+			"Value":"",
+			"Type":"String"
+		}
+	],
+	"Variables":[]
+}

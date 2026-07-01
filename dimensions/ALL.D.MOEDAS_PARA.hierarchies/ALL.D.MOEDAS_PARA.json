@@ -1,0 +1,77 @@
+{
+	"@type":"Hierarchy",
+	"Name":"ALL.D.MOEDAS_PARA",
+	"Elements":
+	[
+		{
+			"Name":"Moedas em Uso",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"USD",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"EUR",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"GBP",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"JPY",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"AUD",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"CAD",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"MXN",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"PHP",
+			"Type":"Numeric"
+		}
+	],
+	"Edges":
+	[
+		{
+			"ParentName":"Moedas em Uso",
+			"ComponentName":"USD",
+			"Weight":0
+		},
+		{
+			"ParentName":"Moedas em Uso",
+			"ComponentName":"EUR",
+			"Weight":0
+		},
+		{
+			"ParentName":"Moedas em Uso",
+			"ComponentName":"GBP",
+			"Weight":0
+		},
+		{
+			"ParentName":"Moedas em Uso",
+			"ComponentName":"JPY",
+			"Weight":0
+		},
+		{
+			"ParentName":"Moedas em Uso",
+			"ComponentName":"AUD",
+			"Weight":0
+		},
+		{
+			"ParentName":"Moedas em Uso",
+			"ComponentName":"CAD",
+			"Weight":0
+		}
+	],
+	"Subsets@Code.links":[]
+}

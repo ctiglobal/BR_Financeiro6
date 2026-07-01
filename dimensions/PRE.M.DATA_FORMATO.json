@@ -1,0 +1,12 @@
+{
+	"@type":"Dimension",
+	"Name":"PRE.M.DATA_FORMATO",
+	"Hierarchies@Code.links":
+	[
+		"PRE.M.DATA_FORMATO.hierarchies/PRE.M.DATA_FORMATO.json"
+	],
+	"DefaultHierarchy":
+	{
+		"@id":"Dimensions('PRE.M.DATA_FORMATO')/Hierarchies('PRE.M.DATA_FORMATO')"
+	}
+}

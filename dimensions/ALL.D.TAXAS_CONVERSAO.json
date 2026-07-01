@@ -1,0 +1,12 @@
+{
+	"@type":"Dimension",
+	"Name":"ALL.D.TAXAS_CONVERSAO",
+	"Hierarchies@Code.links":
+	[
+		"ALL.D.TAXAS_CONVERSAO.hierarchies/ALL.D.TAXAS_CONVERSAO.json"
+	],
+	"DefaultHierarchy":
+	{
+		"@id":"Dimensions('ALL.D.TAXAS_CONVERSAO')/Hierarchies('ALL.D.TAXAS_CONVERSAO')"
+	}
+}

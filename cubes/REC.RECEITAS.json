@@ -1,0 +1,36 @@
+{
+	"@type":"Cube",
+	"Name":"REC.RECEITAS",
+	"Dimensions":
+	[
+		{
+			"@id":"Dimensions('ALL.D.CONTAS_RECEITAS')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.ANO')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.MES')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.MOEDAS')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.MOEDA_VERSAO')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.VERSAO')"
+		},
+		{
+			"@id":"Dimensions('REC.M.RECEITAS')"
+		}
+	],
+	"Rules@Code.link":"REC.RECEITAS.rules",
+	"Views@Code.links":
+	[
+		"REC.RECEITAS.views/Default.json",
+		"REC.RECEITAS.views/Padrão.json",
+		"REC.RECEITAS.views/Receita Hora Extra.json",
+		"REC.RECEITAS.views/Receita por Moedas.json"
+	]
+}

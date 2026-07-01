@@ -1,0 +1,16 @@
+{
+	"@type":"Hierarchy",
+	"Name":"ALL.D.TAXAS_CONVERSAO",
+	"Elements":
+	[
+		{
+			"Name":"Taxa Média",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"Taxa Final",
+			"Type":"Numeric"
+		}
+	],
+	"Subsets@Code.links":[]
+}

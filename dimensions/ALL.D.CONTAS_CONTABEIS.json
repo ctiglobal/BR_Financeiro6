@@ -1,0 +1,12 @@
+{
+	"@type":"Dimension",
+	"Name":"ALL.D.CONTAS_CONTABEIS",
+	"Hierarchies@Code.links":
+	[
+		"ALL.D.CONTAS_CONTABEIS.hierarchies/ALL.D.CONTAS_CONTABEIS.json"
+	],
+	"DefaultHierarchy":
+	{
+		"@id":"Dimensions('ALL.D.CONTAS_CONTABEIS')/Hierarchies('ALL.D.CONTAS_CONTABEIS')"
+	}
+}

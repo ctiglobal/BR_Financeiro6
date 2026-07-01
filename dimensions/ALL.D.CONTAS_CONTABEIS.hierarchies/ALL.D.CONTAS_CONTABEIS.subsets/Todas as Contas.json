@@ -1,0 +1,6 @@
+{
+	"@type":"Subset",
+	"Name":"Todas as Contas",
+	"Alias":"Descrição",
+	"Expression":"{ HIERARCHIZE( {TM1SUBSETALL( [ALL.D.CONTAS_CONTABEIS] )} ) }"
+}

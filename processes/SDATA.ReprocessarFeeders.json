@@ -1,0 +1,20 @@
+{
+	"@type":"Process",
+	"Name":"SDATA.ReprocessarFeeders",
+	"HasSecurityAccess":false,
+	"Code@Code.link":"SDATA.ReprocessarFeeders.ti",
+	"DataSource":
+	{
+		"Type":"None"
+	},
+	"Parameters":
+	[
+		{
+			"Name":"pCubeName",
+			"Prompt":"Digite o nome do cubo para reprocessar feeders:",
+			"Value":"",
+			"Type":"String"
+		}
+	],
+	"Variables":[]
+}

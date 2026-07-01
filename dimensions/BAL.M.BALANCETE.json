@@ -1,0 +1,12 @@
+{
+	"@type":"Dimension",
+	"Name":"BAL.M.BALANCETE",
+	"Hierarchies@Code.links":
+	[
+		"BAL.M.BALANCETE.hierarchies/BAL.M.BALANCETE.json"
+	],
+	"DefaultHierarchy":
+	{
+		"@id":"Dimensions('BAL.M.BALANCETE')/Hierarchies('BAL.M.BALANCETE')"
+	}
+}

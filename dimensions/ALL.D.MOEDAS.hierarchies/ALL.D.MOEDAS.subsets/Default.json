@@ -1,0 +1,26 @@
+{
+	"@type":"Subset",
+	"Name":"Default",
+	"Alias":"NomeMoeda",
+	"Elements":
+	[
+		{
+			"@id":"Dimensions('ALL.D.MOEDAS')/Hierarchies('ALL.D.MOEDAS')/Elements('USD')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.MOEDAS')/Hierarchies('ALL.D.MOEDAS')/Elements('EUR')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.MOEDAS')/Hierarchies('ALL.D.MOEDAS')/Elements('GBP')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.MOEDAS')/Hierarchies('ALL.D.MOEDAS')/Elements('JPY')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.MOEDAS')/Hierarchies('ALL.D.MOEDAS')/Elements('AUD')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.MOEDAS')/Hierarchies('ALL.D.MOEDAS')/Elements('CAD')"
+		}
+	]
+}

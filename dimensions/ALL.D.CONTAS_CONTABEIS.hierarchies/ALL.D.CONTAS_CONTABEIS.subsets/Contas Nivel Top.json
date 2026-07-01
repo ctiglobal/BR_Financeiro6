@@ -1,0 +1,6 @@
+{
+	"@type":"Subset",
+	"Name":"Contas Nivel Top",
+	"Alias":"Descrição",
+	"Expression":"{{FILTER(TM1SubsetToSet([ALL.D.CONTAS_CONTABEIS].[ALL.D.CONTAS_CONTABEIS], \"Default\", \"public\"), (STRTOVALUE([ALL.D.CONTAS_CONTABEIS].[ALL.D.CONTAS_CONTABEIS].CURRENTMEMBER.PROPERTIES(\"LEVEL_NUMBER\")) = 0))}}"
+}

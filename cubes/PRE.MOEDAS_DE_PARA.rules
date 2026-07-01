@@ -1,0 +1,25 @@
+SKIPCHECK;
+
+['Valor']=N:
+   IF(!ALL.D.MOEDAS @= !ALL.D.MOEDAS_PARA
+      , 1
+      , IF(!ALL.D.MOEDA_VERSAO @<> 'Taxa Planejamento'
+           , 0
+           , STET));
+   C:0;
+
+['Taxa']=N:
+   IF(!ALL.D.MOEDAS @= !ALL.D.MOEDAS_PARA
+      , 1
+      , IF(!ALL.D.MOEDA_VERSAO @<> 'Taxa Planejamento'
+           , STET
+           , IF(['Taxa Planejamento','Valor'] = 0
+                , DB('PRE.MOEDAS_DE_PARA',
+                             DB('PRE.DATA_FORMATO',!ALL.D.ANO,!ALL.D.MES,'-1','YYYY'),
+                             DB('PRE.DATA_FORMATO',!ALL.D.ANO,!ALL.D.MES,'-1','Period'),
+                             !ALL.D.MOEDAS,!ALL.D.MOEDAS_PARA,!ALL.D.TAXAS_CONVERSAO,'Taxa Planejamento','Taxa')
+                , ['Taxa Planejamento','Valor'])));
+   C:0;
+
+
+FEEDERS;

@@ -1,0 +1,34 @@
+{
+	"@type":"Cube",
+	"Name":"PRE.MOEDAS_DE_PARA",
+	"Dimensions":
+	[
+		{
+			"@id":"Dimensions('ALL.D.ANO')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.MES')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.MOEDAS')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.MOEDAS_PARA')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.TAXAS_CONVERSAO')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.MOEDA_VERSAO')"
+		},
+		{
+			"@id":"Dimensions('PRE.M.MOEDAS_DE_PARA')"
+		}
+	],
+	"Rules@Code.link":"PRE.MOEDAS_DE_PARA.rules",
+	"Views@Code.links":
+	[
+		"PRE.MOEDAS_DE_PARA.views/Default.json",
+		"PRE.MOEDAS_DE_PARA.views/Padrão.json"
+	]
+}

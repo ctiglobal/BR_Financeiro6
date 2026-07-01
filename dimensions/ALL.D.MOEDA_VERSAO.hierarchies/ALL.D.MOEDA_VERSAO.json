@@ -1,0 +1,16 @@
+{
+	"@type":"Hierarchy",
+	"Name":"ALL.D.MOEDA_VERSAO",
+	"Elements":
+	[
+		{
+			"Name":"Taxa Real",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"Taxa Planejamento",
+			"Type":"Numeric"
+		}
+	],
+	"Subsets@Code.links":[]
+}
