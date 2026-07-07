@@ -1,0 +1,12 @@
+{
+	"@type":"Process",
+	"Name":"zCTI.Setup.Atributos_Centro_Custo",
+	"HasSecurityAccess":false,
+	"Code@Code.link":"zCTI.Setup.Atributos_Centro_Custo.ti",
+	"DataSource":
+	{
+		"Type":"None"
+	},
+	"Parameters":[],
+	"Variables":[]
+}

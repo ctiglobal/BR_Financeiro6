@@ -1,0 +1,26 @@
+{
+	"@type":"Cube",
+	"Name":"REC.040.Premissas_Canal_UF_Categ",
+	"Dimensions":
+	[
+		{
+			"@id":"Dimensions('ALL.D.Ano')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.Mes')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.Versao')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.Estado')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.Categoria')"
+		},
+		{
+			"@id":"Dimensions('REC.M.040.Premissas_Canal_UF_Categ')"
+		}
+	],
+	"Views@Code.links":[]
+}

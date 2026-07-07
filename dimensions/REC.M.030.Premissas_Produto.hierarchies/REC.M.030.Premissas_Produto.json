@@ -1,0 +1,16 @@
+{
+	"@type":"Hierarchy",
+	"Name":"REC.M.030.Premissas_Produto",
+	"Elements":
+	[
+		{
+			"Name":"$ Preço Unitário Produto",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"$ Custo Unitário Produto",
+			"Type":"Numeric"
+		}
+	],
+	"Subsets@Code.links":[]
+}

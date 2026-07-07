@@ -1,0 +1,30 @@
+#region Prolog
+cDimM = 'REC.M.000.Controle_Real_Orcado';
+IF( DimIx( '}ElementAttributes_' | cDimM, '}PickList' ) = 0 );
+  AttrInsert( cDimM, '', '}PickList', 'S' );
+ENDIF;
+AttrPutS( 'static:Real:Orçado', cDimM, 'Real ou Orçado', '}PickList' );
+cCubo = 'REC.000.Controle_Real_Orcado';
+cMed = 'Real ou Orçado';
+nV = 1;
+WHILE( nV <= 2 );
+  sV = IF( nV = 1, 'T1', 'T2' );
+  nA = 1;
+  nQA = DimSiz('ALL.D.Ano');
+  WHILE( nA <= nQA );
+    sA = DimNm('ALL.D.Ano', nA);
+    IF( DTYPE('ALL.D.Ano', sA) @= 'N' );
+      nM = 1;
+      WHILE( nM <= 12 );
+        sMes = FILL('0', 2 - LONG(NumberToString(nM))) | NumberToString(nM);
+        CellPutS( 'Orçado', cCubo, sA, sMes, sV, cMed );
+        nM = nM + 1;
+      END;
+    ENDIF;
+    nA = nA + 1;
+  END;
+  nV = nV + 1;
+END;
+CellPutS( 'Real', cCubo, '2026', '01', 'T1', cMed );
+CubeSaveData( cCubo );
+#endregion

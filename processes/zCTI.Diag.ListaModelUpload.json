@@ -1,0 +1,12 @@
+{
+	"@type":"Process",
+	"Name":"zCTI.Diag.ListaModelUpload",
+	"HasSecurityAccess":false,
+	"Code@Code.link":"zCTI.Diag.ListaModelUpload.ti",
+	"DataSource":
+	{
+		"Type":"None"
+	},
+	"Parameters":[],
+	"Variables":[]
+}

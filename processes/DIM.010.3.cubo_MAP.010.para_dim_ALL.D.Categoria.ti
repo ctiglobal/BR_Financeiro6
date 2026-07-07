@@ -1,0 +1,40 @@
+#region Prolog
+cDimensao = 'ALL.D.Categoria';
+cCuboMapa = 'MAP.010.Produto';
+cTotalizador = 'Total Categoria';
+cUsuario = IF( DimIx( '}Clients' , TM1User() ) = 0, 'Executed by Chore' , ATTRS('}Clients', TM1User(), '}TM1_DefaultDisplayValue') );
+cCuboParametro = 'SYS.150.Controle_Cargas';
+cHorarioInicio = Now();
+cProcesso = GetProcessName();
+cMensagemProcesso = '';
+cContadorRegistro = 0;
+vElemento = DimSiz(cDimensao);
+vCount = vElemento;
+WHILE(vCount <> 0);
+  vElementoN = DimNm(cDimensao, vCount);
+  IF(DTYPE(cDimensao, vElementoN) @= 'C');
+    DimensionElementDelete(cDimensao, vElementoN);
+  ENDIF;
+  vCount = vCount - 1;
+END;
+DimensionElementInsert ( cDimensao, '', cTotalizador, 'C' );
+DimensionSortOrder ( cDimensao, 'ByName', 'Ascending', 'ByHierarchy' , 'Ascending' );
+#endregion
+#region Metadata
+vCategoria = CellGetS( cCuboMapa, vElement, 'Categoria' );
+IF ( vCategoria @<> '' );
+    DimensionElementComponentAdd( cDimensao, cTotalizador, vCategoria, 1 );
+ENDIF;
+#endregion
+#region Data
+cContadorRegistro = cContadorRegistro + 1;
+sContadorRegistro = NumberToString( cContadorRegistro );
+#endregion
+#region Epilog
+cMensagemProcesso = 'Processo concluído com sucesso';
+CellPutS( TimSt( cHorarioInicio , '\Y-\m-\d \hh\im\ss' ) , cCuboParametro, cProcesso, 'DataHora Fim' );
+CellPutS( cUsuario , cCuboParametro, cProcesso, 'Usuário' );
+CellPutS( cMensagemProcesso , cCuboParametro, cProcesso, 'Mensagem de Log' );
+CellPutS( sContadorRegistro , cCuboParametro, cProcesso, 'Registros Processados' );
+CellPutS( TimSt( Now - cHorarioInicio, ' \h:\i:\s') , cCuboParametro, cProcesso, 'Tempo de Execução' );
+#endregion

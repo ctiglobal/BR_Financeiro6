@@ -1,0 +1,20 @@
+{
+	"@type":"Process",
+	"Name":"DIM.010.0.Inicio_Atualizacao_Mapa_e_Dimensoes_Produto",
+	"HasSecurityAccess":false,
+	"Code@Code.link":"DIM.010.0.Inicio_Atualizacao_Mapa_e_Dimensoes_Produto.ti",
+	"DataSource":
+	{
+		"Type":"None"
+	},
+	"Parameters":
+	[
+		{
+			"Name":"pFile",
+			"Prompt":"Nome do arquivo CSV do mapa de produtos",
+			"Value":"Mapa_Produto.csv",
+			"Type":"String"
+		}
+	],
+	"Variables":[]
+}

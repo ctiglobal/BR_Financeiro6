@@ -1,0 +1,140 @@
+{
+	"@type":"Hierarchy",
+	"Name":"ALL.D.Versao",
+	"Elements":
+	[
+		{
+			"Name":"RE",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"T1",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"T2",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"F1",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"F2",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"F3",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"F4",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"F5",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"F6",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"F7",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"F8",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"F9",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"F10",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"F11",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"Dynamic Versions",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"Static Versions",
+			"Type":"Consolidated"
+		}
+	],
+	"Edges":
+	[
+		{
+			"ParentName":"Dynamic Versions",
+			"ComponentName":"T1",
+			"Weight":1
+		},
+		{
+			"ParentName":"Dynamic Versions",
+			"ComponentName":"T2",
+			"Weight":1
+		},
+		{
+			"ParentName":"Static Versions",
+			"ComponentName":"F1",
+			"Weight":1
+		},
+		{
+			"ParentName":"Static Versions",
+			"ComponentName":"F2",
+			"Weight":1
+		},
+		{
+			"ParentName":"Static Versions",
+			"ComponentName":"F3",
+			"Weight":1
+		},
+		{
+			"ParentName":"Static Versions",
+			"ComponentName":"F4",
+			"Weight":1
+		},
+		{
+			"ParentName":"Static Versions",
+			"ComponentName":"F5",
+			"Weight":1
+		},
+		{
+			"ParentName":"Static Versions",
+			"ComponentName":"F6",
+			"Weight":1
+		},
+		{
+			"ParentName":"Static Versions",
+			"ComponentName":"F7",
+			"Weight":1
+		},
+		{
+			"ParentName":"Static Versions",
+			"ComponentName":"F8",
+			"Weight":1
+		},
+		{
+			"ParentName":"Static Versions",
+			"ComponentName":"F9",
+			"Weight":1
+		},
+		{
+			"ParentName":"Static Versions",
+			"ComponentName":"F10",
+			"Weight":1
+		},
+		{
+			"ParentName":"Static Versions",
+			"ComponentName":"F11",
+			"Weight":1
+		}
+	],
+	"Subsets@Code.links":[]
+}

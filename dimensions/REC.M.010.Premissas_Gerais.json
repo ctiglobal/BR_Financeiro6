@@ -1,0 +1,12 @@
+{
+	"@type":"Dimension",
+	"Name":"REC.M.010.Premissas_Gerais",
+	"Hierarchies@Code.links":
+	[
+		"REC.M.010.Premissas_Gerais.hierarchies/REC.M.010.Premissas_Gerais.json"
+	],
+	"DefaultHierarchy":
+	{
+		"@id":"Dimensions('REC.M.010.Premissas_Gerais')/Hierarchies('REC.M.010.Premissas_Gerais')"
+	}
+}

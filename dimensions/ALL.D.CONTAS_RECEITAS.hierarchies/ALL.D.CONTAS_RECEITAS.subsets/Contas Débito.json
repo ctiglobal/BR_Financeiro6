@@ -1,6 +1,0 @@
-{
-	"@type":"Subset",
-	"Name":"Contas Débito",
-	"Alias":"Descrição",
-	"Expression":"{{FILTER(TM1SubsetAll([ALL.D.CONTAS_RECEITAS].[ALL.D.CONTAS_RECEITAS]), ([ALL.D.CONTAS_RECEITAS].[ALL.D.CONTAS_RECEITAS].CURRENTMEMBER.PROPERTIES(\"Tipo DB/CR\") = \"DR\"))}}"
-}

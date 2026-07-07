@@ -1,0 +1,20 @@
+#region Prolog
+sLista = '';
+sArq = WildcardFileSearch( '*.pdf*', '' );
+WHILE( sArq @<> '' );
+  sLista = sLista | '[' | sArq | '] ';
+  sArq = WildcardFileSearch( '*.pdf*', sArq );
+END;
+sB = '';
+sArq = WildcardFileSearch( '*.blb', '' );
+nC = 0;
+WHILE( sArq @<> '' & nC < 20 );
+  sB = sB | '[' | sArq | '] ';
+  sArq = WildcardFileSearch( '*.blb', sArq );
+  nC = nC + 1;
+END;
+sExistePdfRaiz = IF( FileExists('01.Receita_Consultores.pdf') = 1, 'SIM', 'NAO' );
+sExisteBlbRaiz = IF( FileExists('01.Receita_Consultores.pdf.blb') = 1, 'SIM', 'NAO' );
+sExisteMUpdfClean = IF( FileExists('model_upload\01.Receita_Consultores.pdf') = 1, 'SIM', 'NAO' );
+CellPutS( 'PDF raiz: ' | sLista | ' || BLB raiz: ' | sB | ' || pdf-clean-raiz=' | sExistePdfRaiz | ' blb-raiz=' | sExisteBlbRaiz | ' mu-pdf-clean=' | sExisteMUpdfClean, 'SYS.150.Controle_Cargas', 'zCTI.Diag.ListaRaiz', 'Mensagem de Log' );
+#endregion

@@ -1,0 +1,20 @@
+{
+	"@type":"Cube",
+	"Name":"REC.000.Controle_Real_Orcado",
+	"Dimensions":
+	[
+		{
+			"@id":"Dimensions('ALL.D.Ano')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.Mes')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.Versao')"
+		},
+		{
+			"@id":"Dimensions('REC.M.000.Controle_Real_Orcado')"
+		}
+	],
+	"Views@Code.links":[]
+}

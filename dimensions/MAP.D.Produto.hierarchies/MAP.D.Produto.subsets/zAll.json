@@ -1,0 +1,5 @@
+{
+	"@type":"Subset",
+	"Name":"zAll",
+	"Expression":"{TM1SubsetAll( [MAP.D.Produto] )}"
+}

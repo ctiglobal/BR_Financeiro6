@@ -1,0 +1,12 @@
+{
+	"@type":"Hierarchy",
+	"Name":"REC.M.000.Controle_Real_Orcado",
+	"Elements":
+	[
+		{
+			"Name":"Real ou Orçado",
+			"Type":"String"
+		}
+	],
+	"Subsets@Code.links":[]
+}

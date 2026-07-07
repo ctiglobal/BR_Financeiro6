@@ -1,0 +1,340 @@
+#region Prolog
+# ===============================================================================================================
+#GENERALCOMMENT             Descrição:         Carrega o CSV de Depreciação para o cubo CAP.200.Investimentos, filtrado por Ano e Versão
+#GENERALCOMMENT             Responsável:     Vitor Ribeiro
+#GENERALCOMMENT             Data Criação:    Julho/2026
+#
+#LASTCHANGE                 Alterações:
+#LASTCHANGE                 Responsavel Alterações:
+# ===============================================================================================================
+
+# ===============================================================================================================
+#PROLOGCOMMENT              Descrição:  Valida parâmetros (Ano/Versão), nome e existência do arquivo; desliga o log do cubo (acelerador); limpa o slice (Ano+Versão) do destino e as rejeições anteriores no SYS.160.
+# ===============================================================================================================
+
+# =================================================================================
+#                                     Glosário
+# =================================================================================
+# Prefixos: v=entrada turbo / p=parâmetro / c=constante / n=numerica / s=string
+#
+# Parâmetros: pAno, pVersao, pFile.
+# ACELERADORES (padrão zTemplate): log do cubo desligado durante a carga; limpeza por view temporária com ViewExtractSkip* + ViewZeroOut.
+# ATENÇÃO: o arquivo usa PONTO como separador decimal (16001.9); DecimalSeparator='.' / ThousandSeparator=',' e StringToNumberEx(v,'.',',').
+# =================================================================================
+
+# Cubo de destino (ALTERAR)
+# ========================================
+cCuboDestino = 'CAP.200.Investimentos';
+
+# Variáveis do padrão CTI (NÃO alterar)
+# ========================================
+cUsuario = IF( DimIx( '}Clients' , TM1User() ) = 0, 'Executed by Chore' , TM1User() );
+cCuboParametro = 'SYS.150.Controle_Cargas';
+cCuboReject = 'SYS.160.Rejeitados_Cargas';
+cCuboPropriedade = '}CubeProperties';
+cHorarioInicio = Now();
+cProcesso = GetProcessName();
+cMensagemRegistro = '';
+cMensagemProcesso = '';
+cExisteRegistroRejeitado = 0;
+cExisteCabecalhoRejeitado = 0;
+cContadorRegistro = 0;
+cContadorRejeitados = 0;
+cTipoErro = 0;
+sContadorRegistro = '0';
+
+# ACELERADOR - Limpa rejeições anteriores deste processo no SYS.160 (view temporária)
+# ========================================
+cViewR = 'proc.RejLimpeza.CAP020';
+cSubR = cViewR;
+ViewCreate( cCuboReject, cViewR, 1 );
+SubsetCreate( '}Processes', cSubR, 1 );
+ViewSubsetAssign( cCuboReject, cViewR, '}Processes', cSubR );
+SubsetElementInsert( '}Processes', cSubR, cProcesso, 1 );
+ViewExtractSkipZeroesSet( cCuboReject, cViewR, 0 );
+ViewZeroOut( cCuboReject, cViewR );
+
+# Parâmetros do SYS.150
+# ========================================
+cCaminhoArquivoFonte = CellGetS( cCuboParametro , cProcesso , 'Caminho do Arquivo Fonte' );
+cPrefixoArquivoFonte = CellGetS( cCuboParametro , cProcesso , 'Prefixo do Arquivo' );
+cUtilizarDebug = CellGetS( cCuboParametro , cProcesso , 'Debug (S/N)' );
+cGravarLogAlteracao = CellGetS( cCuboParametro , cProcesso , 'Gerar Log de Alteração (S/N)' );
+cUtilizarDebug = IF( cUtilizarDebug @= 'S' , 'S' , 'N' );
+cGravarLogAlteracao = IF( cGravarLogAlteracao @= 'S' , 'S' , 'N' );
+
+# Configuração do arquivo ASCII (decimal PONTO)
+# ========================================
+DataSourceASCIIDelimiter = ';';
+DataSourceASCIIThousandSeparator = ',';
+DataSourceASCIIDecimalSeparator = '.';
+DataSourceQuoteCharacter = '';
+
+# Validação 1 - Parâmetro pAno existe em ALL.D.Ano
+# ========================================
+sDim = 'ALL.D.Ano';
+sElm = pAno;
+IF( Trim(sElm) @= '' );
+   cTipoErro = 1;
+   DataSourceType = 'NULL';
+   cMensagemProcesso = 'O parâmetro [ ' | sDim | ' ] não foi informado';
+   ItemReject( cMensagemProcesso );
+ELSEIF( DimIx(sDim,sElm) = 0 );
+   cTipoErro = 1;
+   DataSourceType = 'NULL';
+   cMensagemProcesso = 'O elemento [ ' | sElm | ' ] não existe na dimensão [ ' | sDim | ' ]';
+   ItemReject( cMensagemProcesso );
+ENDIF;
+
+# Validação 2 - Parâmetro pVersao existe em ALL.D.Versao
+# ========================================
+sDim = 'ALL.D.Versao';
+sElm = pVersao;
+IF( Trim(sElm) @= '' );
+   cTipoErro = 1;
+   DataSourceType = 'NULL';
+   cMensagemProcesso = 'O parâmetro [ ' | sDim | ' ] não foi informado';
+   ItemReject( cMensagemProcesso );
+ELSEIF( DimIx(sDim,sElm) = 0 );
+   cTipoErro = 1;
+   DataSourceType = 'NULL';
+   cMensagemProcesso = 'O elemento [ ' | sElm | ' ] não existe na dimensão [ ' | sDim | ' ]';
+   ItemReject( cMensagemProcesso );
+ENDIF;
+
+# Validação 3 - Nome do arquivo = Prefixo_<pAno>.csv
+# ========================================
+cNomeArquivoFonte = cPrefixoArquivoFonte | '_' | pAno | '.csv';
+IF( cNomeArquivoFonte @<> pFile );
+   cTipoErro = 1;
+   DataSourceType = 'NULL';
+   cMensagemProcesso = 'O arquivo carregado [ ' | pFile | ' ] deveria ter o nome [ ' | cNomeArquivoFonte | ' ]';
+   ItemReject( cMensagemProcesso );
+ENDIF;
+
+# Validação do arquivo fonte (caminho / diretório / arquivo)
+# ========================================
+IF( cCaminhoArquivoFonte @= '' );
+   cTipoErro = 1;
+   DataSourceType = 'NULL';
+   cMensagemProcesso = 'O caminho do arquivo fonte não foi informado';
+   ItemReject( cMensagemProcesso );
+ENDIF;
+cCaminhoArquivoFonte = IF( SUBST( cCaminhoArquivoFonte , LONG( cCaminhoArquivoFonte ) , 1 ) @<> '\' , cCaminhoArquivoFonte | '\' , cCaminhoArquivoFonte );
+IF( FileExists(cCaminhoArquivoFonte) = 0 );
+   cTipoErro = 1;
+   DataSourceType = 'NULL';
+   cMensagemProcesso = 'O diretório [ ' | cCaminhoArquivoFonte | ' ] não existe';
+   ItemReject( cMensagemProcesso );
+ENDIF;
+cNomeArquivoFonteCompleto = cCaminhoArquivoFonte | pFile;
+IF( FileExists(cNomeArquivoFonteCompleto) = 0 );
+   cTipoErro = 1;
+   DataSourceType = 'NULL';
+   cMensagemProcesso = 'O arquivo [ ' | pFile | ' ] não existe em [ ' | cCaminhoArquivoFonte | ' ]';
+   ItemReject( cMensagemProcesso );
+ENDIF;
+DatasourceNameForClient = cNomeArquivoFonteCompleto;
+DatasourceNameForServer = cNomeArquivoFonteCompleto;
+
+# ACELERADOR - Desliga o log do cubo e limpa o slice (Ano + Versão) via view temporária
+# ========================================
+IF( cTipoErro = 0 );
+   sLog = IF( cGravarLogAlteracao @= 'N', 'NO', 'YES' );
+   CellPutS( sLog, cCuboPropriedade, cCuboDestino, 'LOGGING' );
+   cView = 'proc.Limpeza.CAP020';
+   cSub = cView;
+   ViewCreate( cCuboDestino, cView, 1 );
+   cDim = 'ALL.D.Ano';
+   SubsetCreate( cDim, cSub, 1 );
+   ViewSubsetAssign( cCuboDestino, cView, cDim, cSub );
+   SubsetElementInsert( cDim, cSub, pAno, 1 );
+   cDim = 'ALL.D.Versao';
+   SubsetCreate( cDim, cSub, 1 );
+   ViewSubsetAssign( cCuboDestino, cView, cDim, cSub );
+   SubsetElementInsert( cDim, cSub, pVersao, 1 );
+   ViewExtractSkipCalcsSet( cCuboDestino, cView, 1 );
+   ViewExtractSkipZeroesSet( cCuboDestino, cView, 1 );
+   ViewExtractSkipRuleValuesSet( cCuboDestino, cView, 1 );
+   ViewZeroOut( cCuboDestino, cView );
+ENDIF;
+
+# Garante o atributo de cabeçalho do processo no SYS.160
+# ========================================
+IF( CubeExists('}ElementAttributes_SYS.M.160.Rejeitados_Cargas') <> 0 );
+   IF( DimensionElementExists('}ElementAttributes_SYS.M.160.Rejeitados_Cargas',cProcesso) = 0 );
+      AttrInsert( 'SYS.M.160.Rejeitados_Cargas', '', cProcesso, 'S' );
+   ENDIF;
+ELSE;
+   AttrInsert( 'SYS.M.160.Rejeitados_Cargas', '', cProcesso, 'S' );
+ENDIF;
+#endregion
+#region Metadata
+# ===============================================================================================================
+#METADATACOMMENT   Descrição:  Sem atualização de dimensão - a depreciação só pode referenciar Centros de Custo já cadastrados (linhas com código inexistente são rejeitadas no tab Dados).
+# ===============================================================================================================
+#endregion
+#region Data
+# ===============================================================================================================
+#DATACOMMENT   Descrição:  Valida Ano/Mês/Centro (existência e não-totalizador), Ano=parâmetro e Valor numérico; rejeita para SYS.160 e grava a depreciação com CellIncrementN.
+# ===============================================================================================================
+
+# Contador e limpeza de espaços
+# ========================================
+cContadorRegistro = cContadorRegistro + 1;
+sContadorRegistro = NumberToString( cContadorRegistro );
+vAno = Trim(vAno);
+vMes = Trim(vMes);
+vCentro = Trim(vCentro);
+vValor = Trim(vValor);
+vValor = IF( vValor @= '-', '0', vValor );
+
+# Pula linha totalmente vazia
+# ========================================
+IF( '' @= vAno & '' @= vMes & '' @= vCentro & '' @= vValor );
+   ItemSkip;
+ENDIF;
+
+# Força 2 dígitos no mês (branco vira '00' e será rejeitado por não existir)
+# ========================================
+vMes = FILL( '0', 2 - LONG( vMes ) ) | vMes;
+cExisteRegistroRejeitado = 0;
+cMensagemRegistro = '';
+
+# Validação 4 - Ano existe / não é totalizador
+# ========================================
+sDim = 'ALL.D.Ano';
+sElm = vAno;
+sCol = 'Ano';
+IF( cExisteRegistroRejeitado = 0 );
+   IF( sElm @= '' );
+      cMensagemRegistro = 'A coluna [ ' | sCol | ' ] está em branco';
+      cExisteRegistroRejeitado = 1;
+   ELSEIF( DimIx(sDim,sElm) = 0 );
+      cMensagemRegistro = 'A coluna [ ' | sCol | ' ] contém [ ' | sElm | ' ] que não existe na dimensão [ ' | sDim | ' ]';
+      cExisteRegistroRejeitado = 1;
+   ELSEIF( DTYPE(sDim,sElm) @= 'C' );
+      cMensagemRegistro = 'A coluna [ ' | sCol | ' ] contém [ ' | sElm | ' ] que é um totalizador';
+      cExisteRegistroRejeitado = 1;
+   ENDIF;
+ENDIF;
+
+# Validação 5 - Mês existe / não é totalizador
+# ========================================
+sDim = 'ALL.D.Mes';
+sElm = vMes;
+sCol = 'Mes';
+IF( cExisteRegistroRejeitado = 0 );
+   IF( sElm @= '' );
+      cMensagemRegistro = 'A coluna [ ' | sCol | ' ] está em branco';
+      cExisteRegistroRejeitado = 1;
+   ELSEIF( DimIx(sDim,sElm) = 0 );
+      cMensagemRegistro = 'A coluna [ ' | sCol | ' ] contém [ ' | sElm | ' ] que não existe na dimensão [ ' | sDim | ' ]';
+      cExisteRegistroRejeitado = 1;
+   ELSEIF( DTYPE(sDim,sElm) @= 'C' );
+      cMensagemRegistro = 'A coluna [ ' | sCol | ' ] contém [ ' | sElm | ' ] que é um totalizador';
+      cExisteRegistroRejeitado = 1;
+   ENDIF;
+ENDIF;
+
+# Validação 6 - Centro de Custo existe / não é totalizador
+# ========================================
+sDim = 'ALL.D.Centro_Custo';
+sElm = vCentro;
+sCol = 'Centro de Custo';
+IF( cExisteRegistroRejeitado = 0 );
+   IF( sElm @= '' );
+      cMensagemRegistro = 'A coluna [ ' | sCol | ' ] está em branco';
+      cExisteRegistroRejeitado = 1;
+   ELSEIF( DimIx(sDim,sElm) = 0 );
+      cMensagemRegistro = 'A coluna [ ' | sCol | ' ] contém [ ' | sElm | ' ] que não existe na dimensão [ ' | sDim | ' ]';
+      cExisteRegistroRejeitado = 1;
+   ELSEIF( DTYPE(sDim,sElm) @= 'C' );
+      cMensagemRegistro = 'A coluna [ ' | sCol | ' ] contém [ ' | sElm | ' ] que é um totalizador';
+      cExisteRegistroRejeitado = 1;
+   ENDIF;
+ENDIF;
+
+# Validação 7 - Ano da linha = parâmetro pAno
+# ========================================
+IF( cExisteRegistroRejeitado = 0 );
+   IF( vAno @<> pAno );
+      cMensagemRegistro = 'A coluna [ Ano ] contém [ ' | vAno | ' ] diferente do parâmetro [ ' | pAno | ' ]';
+      cExisteRegistroRejeitado = 1;
+   ENDIF;
+ENDIF;
+
+# Validação 8 - Valor contém apenas caracteres numéricos (0-9 , . -)
+# ========================================
+sElm = vValor;
+sCol = 'Valor';
+IF( cExisteRegistroRejeitado = 0 );
+   MxChar = LONG(sElm);
+   ixChar = 1;
+   fail = 0;
+   WHILE( ixChar <= MxChar & fail = 0 );
+      testASCII = CODE(sElm,ixChar);
+      IF( ~(testASCII >= 48 & testASCII <= 57) & testASCII <> 44 & testASCII <> 46 & testASCII <> 45 );
+         cExisteRegistroRejeitado = 1;
+         cMensagemRegistro = 'A coluna [ ' | sCol | ' ] contém o caractere [ ' | SUBST(sElm,ixChar,1) | ' ], deve conter apenas números';
+         fail = 1;
+      ENDIF;
+      ixChar = ixChar + 1;
+   END;
+ENDIF;
+
+# Rejeição: grava no SYS.160 (cabeçalho COL1..COL4) e pula a linha
+# ========================================
+IF( cExisteRegistroRejeitado = 1 % cUtilizarDebug @= 'S' );
+   IF( cExisteCabecalhoRejeitado = 0 );
+      AttrPutS( 'Num. Registro', 'SYS.M.160.Rejeitados_Cargas', 'Linha de Registro', cProcesso );
+      AttrPutS( 'Mensagem de Erro', 'SYS.M.160.Rejeitados_Cargas', 'Mensagem', cProcesso );
+      AttrPutS( 'Ano', 'SYS.M.160.Rejeitados_Cargas', 'COL1', cProcesso );
+      AttrPutS( 'Mes', 'SYS.M.160.Rejeitados_Cargas', 'COL2', cProcesso );
+      AttrPutS( 'Centro de Custo', 'SYS.M.160.Rejeitados_Cargas', 'COL3', cProcesso );
+      AttrPutS( 'Valor', 'SYS.M.160.Rejeitados_Cargas', 'COL4', cProcesso );
+      cExisteCabecalhoRejeitado = 1;
+      cTipoErro = 2;
+      IF( cUtilizarDebug @= 'S' );
+         cMensagemProcesso = 'Processo concluido com registros salvos no cubo de Debug, verificar: ' | cCuboReject;
+      ENDIF;
+   ENDIF;
+   cContadorRejeitados = cContadorRejeitados + 1;
+   sLinha = 'L' | NumberToString(cContadorRejeitados);
+   IF( DIMIX('SYS.D.Linha',sLinha) <> 0 );
+      CellPutS( sContadorRegistro, cCuboReject, cProcesso, cUsuario, sLinha, 'Linha de Registro' );
+      CellPutS( cMensagemRegistro, cCuboReject, cProcesso, cUsuario, sLinha, 'Mensagem' );
+      CellPutS( vAno, cCuboReject, cProcesso, cUsuario, sLinha, 'COL1' );
+      CellPutS( vMes, cCuboReject, cProcesso, cUsuario, sLinha, 'COL2' );
+      CellPutS( vCentro, cCuboReject, cProcesso, cUsuario, sLinha, 'COL3' );
+      CellPutS( vValor, cCuboReject, cProcesso, cUsuario, sLinha, 'COL4' );
+   ENDIF;
+   IF( cExisteRegistroRejeitado = 1 );
+      cMensagemProcesso = 'Processo concluido com registros rejeitados, verificar: ' | cCuboReject;
+      ItemSkip;
+   ENDIF;
+ENDIF;
+
+# Grava a depreciação (acumula com CellIncrementN; decimal '.' / milhar ',')
+# ========================================
+n01 = StringToNumberEx( vValor, '.', ',' );
+CellIncrementN( n01, cCuboDestino, vAno, vMes, pVersao, vCentro, '$ Depreciação' );
+#endregion
+#region Epilog
+# ===============================================================================================================
+#EPILOGCOMMENT   Descrição:  Reabilita o log do cubo (acelerador), salva os dados e registra o status no SYS.150. Sinaliza rejeição (ItemReject) se houve.
+# ===============================================================================================================
+CellPutS( 'YES', cCuboPropriedade, cCuboDestino, 'LOGGING' );
+CubeSaveData( cCuboDestino );
+IF( cTipoErro = 0 );
+   cMensagemProcesso = 'Processo concluído com sucesso';
+ENDIF;
+CellPutS( TimSt(cHorarioInicio,'\Y-\m-\d \hh\im\ss'), cCuboParametro, cProcesso, 'DataHora Fim' );
+CellPutS( cUsuario, cCuboParametro, cProcesso, 'Usuário' );
+CellPutS( cMensagemProcesso, cCuboParametro, cProcesso, 'Mensagem de Log' );
+CellPutS( sContadorRegistro, cCuboParametro, cProcesso, 'Registros Processados' );
+CellPutS( TimSt(Now - cHorarioInicio,' \h:\i:\s'), cCuboParametro, cProcesso, 'Tempo de Execução' );
+IF( cTipoErro = 2 );
+   ItemReject( cMensagemProcesso );
+ENDIF;
+#endregion

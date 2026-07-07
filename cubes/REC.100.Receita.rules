@@ -1,0 +1,186 @@
+SKIPCHECK;
+
+# --------------------------------------------------------------------------------------------
+#Name  Controle de Versão - Virada de Chave Real x Orçado
+#Desc  Nas versões dinâmicas T1/T2, quando o mês/ano está marcado como 'Real' em REC.000, o valor espelha a versão RE (Realizado) sem cálculo; caso contrário calcula pelas premissas. RE e versões estáticas (F1..F11) ficam com carga direta (STET).
+#Date  03/07/2026
+#Author Vitor Ribeiro
+# --------------------------------------------------------------------------------------------
+
+# --------------------------------------------------------------------------------------------
+#Name  Volume de Venda
+#Desc  Real espelha o Volume da versão RE; Orçado mantém o valor digitado (input do usuário).
+#Date  03/07/2026
+#Author Vitor Ribeiro
+# --------------------------------------------------------------------------------------------
+['Volume de Venda']=N:
+   IF( ( !ALL.D.Versao @= 'T1' % !ALL.D.Versao @= 'T2' )
+       & DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
+      DB('REC.100.Receita', !ALL.D.Ano, !ALL.D.Mes, 'RE', !ALL.D.Produto, !ALL.D.Estado, !ALL.D.Canal, 'Volume de Venda'),
+      STET);
+
+# --------------------------------------------------------------------------------------------
+#Name  $ Receita Bruta
+#Desc  Real espelha RE; Orçado = Volume de Venda x Preço Unitário do Produto (REC.030).
+#Date  03/07/2026
+#Author Vitor Ribeiro
+# --------------------------------------------------------------------------------------------
+['$ Receita Bruta']=N:
+   IF( !ALL.D.Versao @= 'T1' % !ALL.D.Versao @= 'T2',
+      IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
+         DB('REC.100.Receita', !ALL.D.Ano, !ALL.D.Mes, 'RE', !ALL.D.Produto, !ALL.D.Estado, !ALL.D.Canal, '$ Receita Bruta'),
+         ['Volume de Venda'] * DB('REC.030.Premissas_Produto', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, !ALL.D.Produto, '$ Preço Unitário Produto') ),
+      STET);
+
+# --------------------------------------------------------------------------------------------
+#Name  $ Desconto
+#Desc  Real espelha RE; Orçado = - Receita Bruta x % Desconto por Estado/Categoria (REC.040). Sinal negativo (dedução).
+#Date  03/07/2026
+#Author Vitor Ribeiro
+# --------------------------------------------------------------------------------------------
+['$ Desconto']=N:
+   IF( !ALL.D.Versao @= 'T1' % !ALL.D.Versao @= 'T2',
+      IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
+         DB('REC.100.Receita', !ALL.D.Ano, !ALL.D.Mes, 'RE', !ALL.D.Produto, !ALL.D.Estado, !ALL.D.Canal, '$ Desconto'),
+         -1 * ( ['$ Receita Bruta'] * DB('REC.040.Premissas_Canal_UF_Categ', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, !ALL.D.Estado, ATTRS('ALL.D.Produto', !ALL.D.Produto, 'Categoria'), '% Desconto') ) ),
+      STET);
+
+# --------------------------------------------------------------------------------------------
+#Name  $ Devolução
+#Desc  Real espelha RE; Orçado = - Receita Bruta x % Devolução por Estado/Categoria (REC.040). Sinal negativo (dedução).
+#Date  03/07/2026
+#Author Vitor Ribeiro
+# --------------------------------------------------------------------------------------------
+['$ Devolução']=N:
+   IF( !ALL.D.Versao @= 'T1' % !ALL.D.Versao @= 'T2',
+      IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
+         DB('REC.100.Receita', !ALL.D.Ano, !ALL.D.Mes, 'RE', !ALL.D.Produto, !ALL.D.Estado, !ALL.D.Canal, '$ Devolução'),
+         -1 * ( ['$ Receita Bruta'] * DB('REC.040.Premissas_Canal_UF_Categ', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, !ALL.D.Estado, ATTRS('ALL.D.Produto', !ALL.D.Produto, 'Categoria'), '% Devolução') ) ),
+      STET);
+
+# --------------------------------------------------------------------------------------------
+#Name  $ ICMS
+#Desc  Real espelha RE; Orçado = - (Receita Bruta + Desconto + Devolução) x % ICMS por Estado (REC.020). Sinal negativo (imposto).
+#Date  03/07/2026
+#Author Vitor Ribeiro
+# --------------------------------------------------------------------------------------------
+['$ ICMS']=N:
+   IF( !ALL.D.Versao @= 'T1' % !ALL.D.Versao @= 'T2',
+      IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
+         DB('REC.100.Receita', !ALL.D.Ano, !ALL.D.Mes, 'RE', !ALL.D.Produto, !ALL.D.Estado, !ALL.D.Canal, '$ ICMS'),
+         -1 * ( (['$ Receita Bruta'] + ['$ Desconto'] + ['$ Devolução']) * DB('REC.020.Premissas_Estado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, !ALL.D.Estado, '% ICMS') ) ),
+      STET);
+
+# --------------------------------------------------------------------------------------------
+#Name  $ IPI
+#Desc  Real espelha RE; Orçado = - Receita Bruta x % IPI geral (REC.010). Sinal negativo (imposto).
+#Date  03/07/2026
+#Author Vitor Ribeiro
+# --------------------------------------------------------------------------------------------
+['$ IPI']=N:
+   IF( !ALL.D.Versao @= 'T1' % !ALL.D.Versao @= 'T2',
+      IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
+         DB('REC.100.Receita', !ALL.D.Ano, !ALL.D.Mes, 'RE', !ALL.D.Produto, !ALL.D.Estado, !ALL.D.Canal, '$ IPI'),
+         -1 * ( ['$ Receita Bruta'] * DB('REC.010.Premissas_Gerais', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, '% IPI') ) ),
+      STET);
+
+# --------------------------------------------------------------------------------------------
+#Name  $ PIS/COFINS
+#Desc  Real espelha RE; Orçado = - Receita Bruta x % PIS/COFINS geral (REC.010). Sinal negativo (imposto).
+#Date  03/07/2026
+#Author Vitor Ribeiro
+# --------------------------------------------------------------------------------------------
+['$ PIS/COFINS']=N:
+   IF( !ALL.D.Versao @= 'T1' % !ALL.D.Versao @= 'T2',
+      IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
+         DB('REC.100.Receita', !ALL.D.Ano, !ALL.D.Mes, 'RE', !ALL.D.Produto, !ALL.D.Estado, !ALL.D.Canal, '$ PIS/COFINS'),
+         -1 * ( ['$ Receita Bruta'] * DB('REC.010.Premissas_Gerais', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, '% PIS / COFINS') ) ),
+      STET);
+
+# --------------------------------------------------------------------------------------------
+#Name  $ Receita Líquida
+#Desc  Real espelha RE; Orçado = Receita Bruta + Desconto + Devolução + Impostos (deduções já são negativas).
+#Date  03/07/2026
+#Author Vitor Ribeiro
+# --------------------------------------------------------------------------------------------
+['$ Receita Líquida']=N:
+   IF( !ALL.D.Versao @= 'T1' % !ALL.D.Versao @= 'T2',
+      IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
+         DB('REC.100.Receita', !ALL.D.Ano, !ALL.D.Mes, 'RE', !ALL.D.Produto, !ALL.D.Estado, !ALL.D.Canal, '$ Receita Líquida'),
+         ['$ Receita Bruta'] + ['$ Desconto'] + ['$ Devolução'] + ['$ Impostos'] ),
+      STET);
+
+# --------------------------------------------------------------------------------------------
+#Name  $ Frete
+#Desc  Real espelha RE; Orçado = - Volume de Venda x Preço Médio de Frete por Estado (REC.020). Sinal negativo (custo).
+#Date  03/07/2026
+#Author Vitor Ribeiro
+# --------------------------------------------------------------------------------------------
+['$ Frete']=N:
+   IF( !ALL.D.Versao @= 'T1' % !ALL.D.Versao @= 'T2',
+      IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
+         DB('REC.100.Receita', !ALL.D.Ano, !ALL.D.Mes, 'RE', !ALL.D.Produto, !ALL.D.Estado, !ALL.D.Canal, '$ Frete'),
+         -1 * ( ['Volume de Venda'] * DB('REC.020.Premissas_Estado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, !ALL.D.Estado, '$ Preço Médio Frete') ) ),
+      STET);
+
+# --------------------------------------------------------------------------------------------
+#Name  $ CPV
+#Desc  Real espelha RE; Orçado = - Volume de Venda x Custo Unitário do Produto (REC.030). Sinal negativo (custo).
+#Date  03/07/2026
+#Author Vitor Ribeiro
+# --------------------------------------------------------------------------------------------
+['$ CPV']=N:
+   IF( !ALL.D.Versao @= 'T1' % !ALL.D.Versao @= 'T2',
+      IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
+         DB('REC.100.Receita', !ALL.D.Ano, !ALL.D.Mes, 'RE', !ALL.D.Produto, !ALL.D.Estado, !ALL.D.Canal, '$ CPV'),
+         -1 * ( ['Volume de Venda'] * DB('REC.030.Premissas_Produto', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, !ALL.D.Produto, '$ Custo Unitário Produto') ) ),
+      STET);
+
+# --------------------------------------------------------------------------------------------
+#Name  $ Margem de Contribuição
+#Desc  Real espelha RE; Orçado = Receita Líquida + CPV + Frete (CPV e Frete já são negativos).
+#Date  03/07/2026
+#Author Vitor Ribeiro
+# --------------------------------------------------------------------------------------------
+['$ Margem de Contribuição']=N:
+   IF( !ALL.D.Versao @= 'T1' % !ALL.D.Versao @= 'T2',
+      IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
+         DB('REC.100.Receita', !ALL.D.Ano, !ALL.D.Mes, 'RE', !ALL.D.Produto, !ALL.D.Estado, !ALL.D.Canal, '$ Margem de Contribuição'),
+         ['$ Receita Líquida'] + ['$ CPV'] + ['$ Frete'] ),
+      STET);
+
+# --------------------------------------------------------------------------------------------
+#Name  % Margem de Contribuição
+#Desc  Percentual da margem sobre a Receita Líquida (protegido contra divisão por zero). Nas versões estáticas/RE, STET.
+#Date  03/07/2026
+#Author Vitor Ribeiro
+# --------------------------------------------------------------------------------------------
+['% Margem de Contribuição']=N:
+   IF( !ALL.D.Versao @= 'T1' % !ALL.D.Versao @= 'T2',
+      IF( ['$ Receita Líquida'] <> 0, ['$ Margem de Contribuição'] / ['$ Receita Líquida'], 0),
+      STET);
+
+
+# --------------------------------------------------------------------------------------------
+#Name  FEEDERS
+#Desc  Caminho Orçado: Volume de Venda alimenta os cálculos derivados. Caminho Real: os valores de RE alimentam as células espelhadas em T1/T2.
+#Date  03/07/2026
+#Author Vitor Ribeiro
+# --------------------------------------------------------------------------------------------
+FEEDERS;
+
+# --- Caminho Orçado: Volume digitado alimenta os cálculos ---
+['Volume de Venda'] => ['$ Receita Bruta'], ['$ Frete'], ['$ CPV'];
+['$ Receita Bruta'] => ['$ Desconto'], ['$ Devolução'], ['$ ICMS'], ['$ IPI'], ['$ PIS/COFINS'], ['$ Receita Líquida'];
+['$ Receita Líquida'] => ['$ Margem de Contribuição'], ['% Margem de Contribuição'];
+['$ CPV'] => ['$ Margem de Contribuição'];
+['$ Frete'] => ['$ Margem de Contribuição'];
+
+# --- Caminho Real: os valores de RE alimentam T1 e T2 ---
+['RE','Volume de Venda'] =>
+   DB('REC.100.Receita', !ALL.D.Ano, !ALL.D.Mes, 'T1', !ALL.D.Produto, !ALL.D.Estado, !ALL.D.Canal, 'Volume de Venda'),
+   DB('REC.100.Receita', !ALL.D.Ano, !ALL.D.Mes, 'T2', !ALL.D.Produto, !ALL.D.Estado, !ALL.D.Canal, 'Volume de Venda');
+
+['RE','$ Receita Bruta'] =>
+   DB('REC.100.Receita', !ALL.D.Ano, !ALL.D.Mes, 'T1', !ALL.D.Produto, !ALL.D.Estado, !ALL.D.Canal, '$ Receita Bruta'),
+   DB('REC.100.Receita', !ALL.D.Ano, !ALL.D.Mes, 'T2', !ALL.D.Produto, !ALL.D.Estado, !ALL.D.Canal, '$ Receita Bruta');

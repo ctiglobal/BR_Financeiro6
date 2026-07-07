@@ -1,0 +1,12 @@
+{
+	"@type":"Dimension",
+	"Name":"ALL.D.Mes",
+	"Hierarchies@Code.links":
+	[
+		"ALL.D.Mes.hierarchies/ALL.D.Mes.json"
+	],
+	"DefaultHierarchy":
+	{
+		"@id":"Dimensions('ALL.D.Mes')/Hierarchies('ALL.D.Mes')"
+	}
+}

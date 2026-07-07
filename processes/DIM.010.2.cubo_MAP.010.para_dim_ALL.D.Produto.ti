@@ -1,0 +1,81 @@
+#region Prolog
+cDimensao = 'ALL.D.Produto';
+cCuboMapa = 'MAP.010.Produto';
+cTotalizador = 'Total Produtos';
+cUsuario = IF( DimIx( '}Clients' , TM1User() ) = 0, 'Executed by Chore' , ATTRS('}Clients', TM1User(), '}TM1_DefaultDisplayValue') );
+cCuboParametro = 'SYS.150.Controle_Cargas';
+cHorarioInicio = Now();
+cProcesso = GetProcessName();
+cMensagemProcesso = '';
+cContadorRegistro = 0;
+vElemento = DimSiz(cDimensao);
+vCount = vElemento;
+WHILE(vCount <> 0);
+  vElementoN = DimNm(cDimensao, vCount);
+  IF(DTYPE(cDimensao, vElementoN) @= 'C');
+    DimensionElementDelete(cDimensao, vElementoN);
+  ENDIF;
+  vCount = vCount - 1;
+END;
+DimensionElementInsert ( cDimensao, '', cTotalizador, 'C' );
+DimensionSortOrder ( cDimensao, 'ByName', 'Ascending', 'ByHierarchy' , 'Ascending' );
+#endregion
+#region Metadata
+sNivel1 = CellGetS( cCuboMapa, vElement, 'Categoria' );
+sNivel2 = CellGetS( cCuboMapa, vElement, 'SubCategoria' );
+sElm = vElement;
+sDim = cDimensao;
+sTot = cTotalizador;
+IF ( sNivel1 @<> '' );
+    DimensionElementComponentAdd ( sDim, sTot, sNivel1, 1 );
+ELSEIF ( sNivel2 @<> '' );
+    DimensionElementComponentAdd ( sDim, sTot, sNivel2, 1 );
+ELSE;
+    DimensionElementComponentAdd ( sDim, sTot, sElm, 1 );
+ENDIF;
+IF ( sNivel2 @<> '' & sNivel1 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel1, sNivel2, 1 );
+ELSEIF ( sNivel1 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel1, sElm, 1 );
+ENDIF;
+IF ( sNivel2 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel2, sElm, 1 );
+ENDIF;
+#endregion
+#region Data
+cContadorRegistro = cContadorRegistro + 1;
+sContadorRegistro = NumberToString( cContadorRegistro );
+sDescricao = CellGetS( cCuboMapa, vElement, 'Descricao' );
+sCategoria = CellGetS( cCuboMapa, vElement, 'Categoria' );
+sSubCategoria = CellGetS( cCuboMapa, vElement, 'SubCategoria' );
+sFamilia = CellGetS( cCuboMapa, vElement, 'Familia' );
+sMarca = CellGetS( cCuboMapa, vElement, 'Marca' );
+sSabor = CellGetS( cCuboMapa, vElement, 'Sabor' );
+sApresentacao = CellGetS( cCuboMapa, vElement, 'Apresentacao' );
+sProdRevd = CellGetS( cCuboMapa, vElement, 'ProdRevd' );
+sRetornavel = CellGetS( cCuboMapa, vElement, 'Retornavel' );
+sEmbalagem = CellGetS( cCuboMapa, vElement, 'Embalagem' );
+sDim = cDimensao;
+AttrPutS( sDescricao, sDim, vElement, 'Descricao' );
+AttrPutS( sCategoria, sDim, vElement, 'Categoria' );
+AttrPutS( sSubCategoria, sDim, vElement, 'SubCategoria' );
+AttrPutS( sFamilia, sDim, vElement, 'Familia' );
+AttrPutS( sMarca, sDim, vElement, 'Marca' );
+AttrPutS( sSabor, sDim, vElement, 'Sabor' );
+AttrPutS( sApresentacao, sDim, vElement, 'Apresentacao' );
+AttrPutS( sProdRevd, sDim, vElement, 'Producao_ou_Revenda' );
+AttrPutS( sRetornavel, sDim, vElement, 'Retornavel' );
+AttrPutS( sEmbalagem, sDim, vElement, 'Embalagem' );
+sAlias = 'Código e Descrição';
+IF ( vElement @<>'' & sDescricao @<> '' );
+    AttrPutS( vElement | ' - ' | sDescricao, cDimensao, vElement, sAlias );
+ENDIF;
+#endregion
+#region Epilog
+cMensagemProcesso = 'Processo concluído com sucesso';
+CellPutS( TimSt( cHorarioInicio , '\Y-\m-\d \hh\im\ss' ) , cCuboParametro, cProcesso, 'DataHora Fim' );
+CellPutS( cUsuario , cCuboParametro, cProcesso, 'Usuário' );
+CellPutS( cMensagemProcesso , cCuboParametro, cProcesso, 'Mensagem de Log' );
+CellPutS( sContadorRegistro , cCuboParametro, cProcesso, 'Registros Processados' );
+CellPutS( TimSt( Now - cHorarioInicio, ' \h:\i:\s') , cCuboParametro, cProcesso, 'Tempo de Execução' );
+#endregion

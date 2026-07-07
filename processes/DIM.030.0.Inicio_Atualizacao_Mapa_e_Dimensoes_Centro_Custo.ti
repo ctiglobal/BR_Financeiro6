@@ -1,0 +1,19 @@
+#region Prolog
+# ===============================================================================================================
+#GENERALCOMMENT             Descrição:         Orquestrador do cadastro de Centro de Custo: chama, na ordem, os processos de mapa e dimensão
+#GENERALCOMMENT             Responsável:     Vitor Ribeiro
+#GENERALCOMMENT             Data Criação:    Julho/2026
+#
+#LASTCHANGE                 Alterações:
+#LASTCHANGE                 Responsavel Alterações:
+# ===============================================================================================================
+
+# ===============================================================================================================
+#PROLOGCOMMENT              Descrição:  Sequencia: (1) cria atributos, (2) carrega CSV no cubo mapa, (3) reconstrói a hierarquia principal, (4) reconstrói o rollup de Tipo Gasto. A ordem é obrigatória (Hier1 faz o reset dos consolidados antes do Hier2 aditivo).
+# ===============================================================================================================
+
+ExecuteProcess( 'zCTI.Setup.Atributos_Centro_Custo' );
+ExecuteProcess( 'DIM.030.1.CSV_para_cubo_MAP.030.Centro_Custo', 'pFile', 'Mapa_Centro_Custo.csv' );
+ExecuteProcess( 'DIM.030.2.cubo_MAP.030_para_dim_ALL.D.Centro_Custo' );
+ExecuteProcess( 'DIM.030.2.cubo_MAP.030_para_dim_ALL.D.Centro_Custo-Hier2' );
+#endregion

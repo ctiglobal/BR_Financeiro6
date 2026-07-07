@@ -1,0 +1,12 @@
+{
+	"@type":"Process",
+	"Name":"zCTI.Setup.Atributos_Produto",
+	"HasSecurityAccess":false,
+	"Code@Code.link":"zCTI.Setup.Atributos_Produto.ti",
+	"DataSource":
+	{
+		"Type":"None"
+	},
+	"Parameters":[],
+	"Variables":[]
+}

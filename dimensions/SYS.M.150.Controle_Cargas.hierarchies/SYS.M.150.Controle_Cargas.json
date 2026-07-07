@@ -1,0 +1,60 @@
+{
+	"@type":"Hierarchy",
+	"Name":"SYS.M.150.Controle_Cargas",
+	"Elements":
+	[
+		{
+			"Name":"Prefixo do Arquivo",
+			"Type":"String"
+		},
+		{
+			"Name":"Caminho do Arquivo Fonte",
+			"Type":"String"
+		},
+		{
+			"Name":"Gerar Log de Alteração (S/N)",
+			"Type":"String"
+		},
+		{
+			"Name":"Dimensão de Atualização",
+			"Type":"String"
+		},
+		{
+			"Name":"Título do Totalizador",
+			"Type":"String"
+		},
+		{
+			"Name":"Número do Totalizador",
+			"Type":"String"
+		},
+		{
+			"Name":"Debug (S/N)",
+			"Type":"String"
+		},
+		{
+			"Name":"DataHora Inicio",
+			"Type":"String"
+		},
+		{
+			"Name":"DataHora Fim",
+			"Type":"String"
+		},
+		{
+			"Name":"Usuário",
+			"Type":"String"
+		},
+		{
+			"Name":"Mensagem de Log",
+			"Type":"String"
+		},
+		{
+			"Name":"Registros Processados",
+			"Type":"String"
+		},
+		{
+			"Name":"Tempo de Execução",
+			"Type":"String"
+		}
+	],
+	"Subsets@Code.links":[]
+}

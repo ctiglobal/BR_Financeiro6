@@ -1,0 +1,12 @@
+{
+	"@type":"Hierarchy",
+	"Name":"CAP.M.200.Investimentos",
+	"Elements":
+	[
+		{
+			"Name":"$ Depreciação",
+			"Type":"Numeric"
+		}
+	],
+	"Subsets@Code.links":[]
+}

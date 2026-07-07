@@ -1,0 +1,23 @@
+{
+	"@type":"Cube",
+	"Name":"CAP.200.Investimentos",
+	"Dimensions":
+	[
+		{
+			"@id":"Dimensions('ALL.D.Ano')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.Mes')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.Versao')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.Centro_Custo')"
+		},
+		{
+			"@id":"Dimensions('CAP.M.200.Investimentos')"
+		}
+	],
+	"Views@Code.links":[]
+}

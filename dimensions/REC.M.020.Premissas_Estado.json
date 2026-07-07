@@ -1,0 +1,12 @@
+{
+	"@type":"Dimension",
+	"Name":"REC.M.020.Premissas_Estado",
+	"Hierarchies@Code.links":
+	[
+		"REC.M.020.Premissas_Estado.hierarchies/REC.M.020.Premissas_Estado.json"
+	],
+	"DefaultHierarchy":
+	{
+		"@id":"Dimensions('REC.M.020.Premissas_Estado')/Hierarchies('REC.M.020.Premissas_Estado')"
+	}
+}

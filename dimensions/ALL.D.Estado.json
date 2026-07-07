@@ -1,0 +1,12 @@
+{
+	"@type":"Dimension",
+	"Name":"ALL.D.Estado",
+	"Hierarchies@Code.links":
+	[
+		"ALL.D.Estado.hierarchies/ALL.D.Estado.json"
+	],
+	"DefaultHierarchy":
+	{
+		"@id":"Dimensions('ALL.D.Estado')/Hierarchies('ALL.D.Estado')"
+	}
+}

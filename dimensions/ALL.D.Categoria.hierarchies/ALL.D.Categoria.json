@@ -1,0 +1,134 @@
+{
+	"@type":"Hierarchy",
+	"Name":"ALL.D.Categoria",
+	"ElementsSortType":"ByHierarchy",
+	"ComponentsSortType":"ByName",
+	"Elements":
+	[
+		{
+			"Name":"Total Categoria",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"2_AGUA_ADICIONADA",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"2_AGUA_CON_GAS",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"2_AGUA_MEZCLA",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"2_AGUA_SIN_GAS",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"2_CERVEZA",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"2_CHOPP",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"2_COLAS",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"2_ENERGETICOS",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"2_ISOTONICO_E_HIDROTONICOS",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"2_JUGOS_Y_NECTARES",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"2_NARANJADAS_Y_BEBIDAS_CON_SABOR_A_FRUTA",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"2_SABORES",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"2_TE",
+			"Type":"Numeric"
+		}
+	],
+	"Edges":
+	[
+		{
+			"ParentName":"Total Categoria",
+			"ComponentName":"2_AGUA_ADICIONADA",
+			"Weight":1
+		},
+		{
+			"ParentName":"Total Categoria",
+			"ComponentName":"2_AGUA_CON_GAS",
+			"Weight":1
+		},
+		{
+			"ParentName":"Total Categoria",
+			"ComponentName":"2_AGUA_MEZCLA",
+			"Weight":1
+		},
+		{
+			"ParentName":"Total Categoria",
+			"ComponentName":"2_AGUA_SIN_GAS",
+			"Weight":1
+		},
+		{
+			"ParentName":"Total Categoria",
+			"ComponentName":"2_CERVEZA",
+			"Weight":1
+		},
+		{
+			"ParentName":"Total Categoria",
+			"ComponentName":"2_CHOPP",
+			"Weight":1
+		},
+		{
+			"ParentName":"Total Categoria",
+			"ComponentName":"2_COLAS",
+			"Weight":1
+		},
+		{
+			"ParentName":"Total Categoria",
+			"ComponentName":"2_ENERGETICOS",
+			"Weight":1
+		},
+		{
+			"ParentName":"Total Categoria",
+			"ComponentName":"2_ISOTONICO_E_HIDROTONICOS",
+			"Weight":1
+		},
+		{
+			"ParentName":"Total Categoria",
+			"ComponentName":"2_JUGOS_Y_NECTARES",
+			"Weight":1
+		},
+		{
+			"ParentName":"Total Categoria",
+			"ComponentName":"2_NARANJADAS_Y_BEBIDAS_CON_SABOR_A_FRUTA",
+			"Weight":1
+		},
+		{
+			"ParentName":"Total Categoria",
+			"ComponentName":"2_SABORES",
+			"Weight":1
+		},
+		{
+			"ParentName":"Total Categoria",
+			"ComponentName":"2_TE",
+			"Weight":1
+		}
+	],
+	"Subsets@Code.links":[]
+}

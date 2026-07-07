@@ -1,0 +1,16 @@
+{
+	"@type":"Hierarchy",
+	"Name":"REC.M.040.Premissas_Canal_UF_Categ",
+	"Elements":
+	[
+		{
+			"Name":"% Desconto",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"% Devolução",
+			"Type":"Numeric"
+		}
+	],
+	"Subsets@Code.links":[]
+}

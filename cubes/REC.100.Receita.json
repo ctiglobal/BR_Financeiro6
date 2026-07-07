@@ -1,0 +1,30 @@
+{
+	"@type":"Cube",
+	"Name":"REC.100.Receita",
+	"Dimensions":
+	[
+		{
+			"@id":"Dimensions('ALL.D.Ano')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.Mes')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.Versao')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.Produto')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.Estado')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.Canal')"
+		},
+		{
+			"@id":"Dimensions('REC.M.100.Receita')"
+		}
+	],
+	"Rules@Code.link":"REC.100.Receita.rules",
+	"Views@Code.links":[]
+}

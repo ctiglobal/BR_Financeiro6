@@ -1,0 +1,12 @@
+{
+	"@type":"Dimension",
+	"Name":"REC.M.100.Receita",
+	"Hierarchies@Code.links":
+	[
+		"REC.M.100.Receita.hierarchies/REC.M.100.Receita.json"
+	],
+	"DefaultHierarchy":
+	{
+		"@id":"Dimensions('REC.M.100.Receita')/Hierarchies('REC.M.100.Receita')"
+	}
+}

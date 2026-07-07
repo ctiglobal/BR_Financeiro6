@@ -1,0 +1,12 @@
+{
+	"@type":"Process",
+	"Name":"zCTI.Diag.ListaRaiz",
+	"HasSecurityAccess":false,
+	"Code@Code.link":"zCTI.Diag.ListaRaiz.ti",
+	"DataSource":
+	{
+		"Type":"None"
+	},
+	"Parameters":[],
+	"Variables":[]
+}

@@ -1,0 +1,12 @@
+{
+	"@type":"Dimension",
+	"Name":"CAP.M.200.Investimentos",
+	"Hierarchies@Code.links":
+	[
+		"CAP.M.200.Investimentos.hierarchies/CAP.M.200.Investimentos.json"
+	],
+	"DefaultHierarchy":
+	{
+		"@id":"Dimensions('CAP.M.200.Investimentos')/Hierarchies('CAP.M.200.Investimentos')"
+	}
+}

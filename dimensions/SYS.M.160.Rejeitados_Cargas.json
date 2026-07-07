@@ -1,0 +1,12 @@
+{
+	"@type":"Dimension",
+	"Name":"SYS.M.160.Rejeitados_Cargas",
+	"Hierarchies@Code.links":
+	[
+		"SYS.M.160.Rejeitados_Cargas.hierarchies/SYS.M.160.Rejeitados_Cargas.json"
+	],
+	"DefaultHierarchy":
+	{
+		"@id":"Dimensions('SYS.M.160.Rejeitados_Cargas')/Hierarchies('SYS.M.160.Rejeitados_Cargas')"
+	}
+}

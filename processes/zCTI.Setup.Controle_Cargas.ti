@@ -1,0 +1,9 @@
+#region Prolog
+cCubo = 'SYS.150.Controle_Cargas';
+cCaminho = 'model_upload\';
+CellPutS( cCaminho, cCubo, 'DIM.010.1.CSV_para_cubo_MAP.010.Produto', 'Caminho do Arquivo Fonte' );
+CellPutS( 'N', cCubo, 'DIM.010.1.CSV_para_cubo_MAP.010.Produto', 'Debug (S/N)' );
+CellPutS( 'N', cCubo, 'DIM.010.1.CSV_para_cubo_MAP.010.Produto', 'Gerar Log de Alteração (S/N)' );
+CellPutS( cCaminho, cCubo, 'CUB.010.0.CSV_para_cubo_REC.100.Receita - Carga Realizado', 'Caminho do Arquivo Fonte' );
+CellPutS( 'N', cCubo, 'CUB.010.0.CSV_para_cubo_REC.100.Receita - Carga Realizado', 'Debug (S/N)' );
+#endregion

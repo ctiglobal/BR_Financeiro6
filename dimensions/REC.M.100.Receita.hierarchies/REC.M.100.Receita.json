@@ -1,0 +1,78 @@
+{
+	"@type":"Hierarchy",
+	"Name":"REC.M.100.Receita",
+	"Elements":
+	[
+		{
+			"Name":"Volume de Venda",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"$ Receita Bruta",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"$ Desconto",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"$ Devolução",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"$ ICMS",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"$ IPI",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"$ PIS/COFINS",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"$ Receita Líquida",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"$ Frete",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"$ CPV",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"$ Margem de Contribuição",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"% Margem de Contribuição",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"$ Impostos",
+			"Type":"Consolidated"
+		}
+	],
+	"Edges":
+	[
+		{
+			"ParentName":"$ Impostos",
+			"ComponentName":"$ ICMS",
+			"Weight":1
+		},
+		{
+			"ParentName":"$ Impostos",
+			"ComponentName":"$ IPI",
+			"Weight":1
+		},
+		{
+			"ParentName":"$ Impostos",
+			"ComponentName":"$ PIS/COFINS",
+			"Weight":1
+		}
+	],
+	"Subsets@Code.links":[]
+}

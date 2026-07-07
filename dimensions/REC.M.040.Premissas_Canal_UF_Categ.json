@@ -1,0 +1,12 @@
+{
+	"@type":"Dimension",
+	"Name":"REC.M.040.Premissas_Canal_UF_Categ",
+	"Hierarchies@Code.links":
+	[
+		"REC.M.040.Premissas_Canal_UF_Categ.hierarchies/REC.M.040.Premissas_Canal_UF_Categ.json"
+	],
+	"DefaultHierarchy":
+	{
+		"@id":"Dimensions('REC.M.040.Premissas_Canal_UF_Categ')/Hierarchies('REC.M.040.Premissas_Canal_UF_Categ')"
+	}
+}

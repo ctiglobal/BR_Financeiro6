@@ -1,0 +1,21 @@
+#region Prolog
+# ===============================================================================================================
+#GENERALCOMMENT             Descrição:         Setup: cria os atributos e alias da dimensão ALL.D.Centro_Custo e do mapa MAP.D.Centro_Custo
+#GENERALCOMMENT             Responsável:     Vitor Ribeiro
+#GENERALCOMMENT             Data Criação:    Julho/2026
+#
+#LASTCHANGE                 Alterações:
+#LASTCHANGE                 Responsavel Alterações:
+# ===============================================================================================================
+
+# ===============================================================================================================
+#PROLOGCOMMENT              Descrição:  AttrInsert é idempotente; garante que os atributos existam ANTES do AttrPutS dos processos de carga (neste servidor AttrPutS em atributo inexistente falha silenciosamente).
+# ===============================================================================================================
+
+AttrInsert( 'MAP.D.Centro_Custo', '', 'Código e Descrição', 'A' );
+AttrInsert( 'ALL.D.Centro_Custo', '', 'Descricao', 'S' );
+AttrInsert( 'ALL.D.Centro_Custo', '', 'Nivel 1', 'S' );
+AttrInsert( 'ALL.D.Centro_Custo', '', 'Nivel 2', 'S' );
+AttrInsert( 'ALL.D.Centro_Custo', '', 'Tipo Gasto', 'S' );
+AttrInsert( 'ALL.D.Centro_Custo', '', 'Código e Descrição', 'A' );
+#endregion

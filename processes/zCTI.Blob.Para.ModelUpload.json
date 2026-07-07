@@ -1,0 +1,43 @@
+{
+	"@type":"Process",
+	"Name":"zCTI.Blob.Para.ModelUpload",
+	"HasSecurityAccess":false,
+	"Code@Code.link":"zCTI.Blob.Para.ModelUpload.ti",
+	"DataSource":
+	{
+		"Type":"ASCII",
+		"asciiDecimalSeparator":".",
+		"asciiDelimiterChar":"\t",
+		"asciiDelimiterType":"Character",
+		"asciiHeaderRecords":0,
+		"asciiQuoteCharacter":"",
+		"asciiThousandSeparator":",",
+		"dataSourceNameForClient":"placeholder.blb",
+		"dataSourceNameForServer":"placeholder.blb"
+	},
+	"Parameters":
+	[
+		{
+			"Name":"pBlob",
+			"Prompt":"Nome do blob de origem (sem .blb)",
+			"Value":"",
+			"Type":"String"
+		},
+		{
+			"Name":"pDestino",
+			"Prompt":"Nome do arquivo destino dentro de model_upload",
+			"Value":"",
+			"Type":"String"
+		}
+	],
+	"Variables":
+	[
+		{
+			"Name":"vLine",
+			"Type":"String",
+			"Position":1,
+			"StartByte":0,
+			"EndByte":0
+		}
+	]
+}

@@ -1,0 +1,305 @@
+#region Prolog
+# ===============================================================================================================
+#GENERALCOMMENT             Descrição:         Atualiza a dimensão ALL.D.Centro_Custo (hierarquia principal - desbalanceada) a partir do cubo mapa MAP.030.Centro_Custo
+#GENERALCOMMENT             Responsável:     Vitor Ribeiro
+#GENERALCOMMENT             Data Criação:    Julho/2026
+#
+#LASTCHANGE                 Alterações:
+#LASTCHANGE                 Responsavel Alterações:
+# ===============================================================================================================
+
+# ===============================================================================================================
+#PROLOGCOMMENT              Descrição:  Limpa os consolidados, insere o totalizador e prepara a reconstrução da hierarquia desbalanceada.
+# ===============================================================================================================
+
+# =================================================================================
+#                                     Glosário
+# =================================================================================
+# Prefixos de Variáveis
+# v - Variáveis de entrada    - relacionado a origem de dados do turbo
+# p - Parâmetros de entrada   - input do usuário no disparo do processo
+# c - Constantes              - valor fixo (não alteradas durante o processo)
+# n - Numerica   /   s - String (Texto)
+#
+# Variáveis que deve alterar ao reaproveitar o template:
+# cDimensao     - nome da dimensão de destino
+# cCuboMapa     - nome do cubo mapa de origem
+# cTotalizador  - nome do totalizador (raiz) da hierarquia
+# Otimização: a montagem da hierarquia suporta Nível 1 até Nível 10 de forma genérica;
+# para novos níveis basta preencher sNivel3..sNivel10 no tab Metadados (sem mudar a lógica).
+# =================================================================================
+
+# Informações da dimensão e cubo mapa (ALTERAR)
+# ========================================
+cDimensao    = 'ALL.D.Centro_Custo';
+cCuboMapa    = 'MAP.030.Centro_Custo';
+cTotalizador = 'Total Centro de Custo';
+
+# Variáveis do padrão CTI (NÃO alterar)
+# ========================================
+cUsuario = IF( DimIx( '}Clients' , TM1User() ) = 0, 'Executed by Chore' , TM1User() );
+cCuboParametro = 'SYS.150.Controle_Cargas';
+cHorarioInicio = Now();
+cProcesso = GetProcessName();
+cMensagemProcesso = '';
+cContadorRegistro = 0;
+
+# Log inicial como falha (garante rastro caso o processo aborte inesperadamente)
+# ========================================
+cMensagemProcesso = 'Processo com falha, contate o administrador para verificar os logs de erro do sistema';
+CellPutS( TimSt( cHorarioInicio , '\Y-\m-\d \hh\im\ss' ), cCuboParametro, cProcesso, 'DataHora Inicio' );
+CellPutS( TimSt( cHorarioInicio , '\Y-\m-\d \hh\im\ss' ), cCuboParametro, cProcesso, 'DataHora Fim' );
+CellPutS( cUsuario, cCuboParametro, cProcesso, 'Usuário' );
+CellPutS( cMensagemProcesso, cCuboParametro, cProcesso, 'Mensagem de Log' );
+CellPutS( '0', cCuboParametro, cProcesso, 'Registros Processados' );
+
+# Limpa todos os consolidados da dimensão (mantém as folhas)
+# ========================================
+vElemento = DimSiz(cDimensao);
+vCount = vElemento;
+WHILE(vCount <> 0);
+  vElementoN = DimNm(cDimensao, vCount);
+  IF(DTYPE(cDimensao, vElementoN) @= 'C');
+    DimensionElementDelete(cDimensao, vElementoN);
+  ENDIF;
+  vCount = vCount - 1;
+END;
+
+# Insere o totalizador e define a ordenação
+# ========================================
+DimensionElementInsert ( cDimensao, '', cTotalizador, 'C' );
+DimensionSortOrder ( cDimensao, 'ByName', 'Ascending', 'ByHierarchy' , 'Ascending' );
+#endregion
+#region Metadata
+# ===============================================================================================================
+#METADATACOMMENT   Descrição:  Reconstrói a hierarquia desbalanceada considerando os níveis existentes no cubo mapa (Nível 1 até Nível 10).
+# ===============================================================================================================
+
+# Busca os níveis do cubo mapa (preencher sNivel3..10 para hierarquias mais profundas)
+# ========================================
+sNivel1 = CellGetS( cCuboMapa, vElement, 'Nivel 1' );
+sNivel2 = CellGetS( cCuboMapa, vElement, 'Nivel 2' );
+sNivel3 = '';
+sNivel4 = '';
+sNivel5 = '';
+sNivel6 = '';
+sNivel7 = '';
+sNivel8 = '';
+sNivel9 = '';
+sNivel10 = '';
+
+sElm = vElement;
+sDim = cDimensao;
+sTot = cTotalizador;
+
+# Nivel Total
+If ( sNivel1 @<> '' );
+    DimensionElementComponentAdd ( sDim, sTot, sNivel1, 1 );
+ElseIf ( sNivel2 @<> '' );
+    DimensionElementComponentAdd ( sDim, sTot, sNivel2, 1 );
+ElseIf ( sNivel3 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sTot, sNivel3, 1 );
+ElseIf ( sNivel4 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sTot, sNivel4, 1 );
+ElseIf ( sNivel5 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sTot, sNivel5, 1 );
+ElseIf ( sNivel6 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sTot, sNivel6, 1 );
+ElseIf ( sNivel7 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sTot, sNivel7, 1 );
+ElseIf ( sNivel8 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sTot, sNivel8, 1 );
+ElseIf ( sNivel9 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sTot, sNivel9, 1 );
+ElseIf ( sNivel10 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sTot, sNivel10, 1 );
+Else;
+    DimensionElementComponentAdd ( sDim, sTot, sElm, 1 );
+EndIf;
+
+# Nivel 1
+If ( sNivel2 @<> '' & sNivel1 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sNivel1, sNivel2, 1 );
+ElseIf ( sNivel3 @<> '' & sNivel1 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sNivel1, sNivel3, 1 );
+ElseIf ( sNivel4 @<> ''  & sNivel1 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sNivel1, sNivel4, 1 );
+ElseIf ( sNivel5 @<> ''  & sNivel1 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sNivel1, sNivel5, 1 );
+ElseIf ( sNivel6 @<> ''  & sNivel1 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sNivel1, sNivel6, 1 );
+ElseIf ( sNivel7 @<> ''  & sNivel1 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sNivel1, sNivel7, 1 );
+ElseIf ( sNivel8 @<> ''  & sNivel1 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sNivel1, sNivel8, 1 );
+ElseIf ( sNivel9 @<> ''  & sNivel1 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sNivel1, sNivel9, 1 );
+ElseIf ( sNivel10 @<> ''  & sNivel1 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sNivel1, sNivel10, 1 );
+ElseIf ( sNivel1 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel1, sElm, 1 );
+EndIf;
+
+# Nivel 2
+If ( sNivel3 @<> '' & sNivel2 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel2, sNivel3, 1 );
+ElseIf ( sNivel4 @<> '' & sNivel2 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel2, sNivel4, 1 );
+ElseIf ( sNivel5 @<> '' & sNivel2 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel2, sNivel5, 1 );
+ElseIf ( sNivel6 @<> '' & sNivel2 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel2, sNivel6, 1 );
+ElseIf ( sNivel7 @<> '' & sNivel2 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel2, sNivel7, 1 );
+ElseIf ( sNivel8 @<> '' & sNivel2 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel2, sNivel8, 1 );
+ElseIf ( sNivel9 @<> '' & sNivel2 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel2, sNivel9, 1 );
+ElseIf ( sNivel10 @<> '' & sNivel2 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel2, sNivel10, 1 );
+ElseIf ( sNivel2 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel2, sElm, 1 );
+EndIf;
+
+# Nivel 3
+If ( sNivel4 @<> '' & sNivel3 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel3, sNivel4, 1 );
+ElseIf ( sNivel5 @<> '' & sNivel3 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel3, sNivel5, 1 );
+ElseIf ( sNivel6 @<> '' & sNivel3 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel3, sNivel6, 1 );
+ElseIf ( sNivel7 @<> '' & sNivel3 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel3, sNivel7, 1 );
+ElseIf ( sNivel8 @<> '' & sNivel3 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel3, sNivel8, 1 );
+ElseIf ( sNivel9 @<> '' & sNivel3 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel3, sNivel9, 1 );
+ElseIf ( sNivel10 @<> '' & sNivel3 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel3, sNivel10, 1 );
+ElseIf ( sNivel3 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel3, sElm, 1 );
+EndIf;
+
+# Nivel 4
+If ( sNivel5 @<> '' & sNivel4 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel4, sNivel5, 1 );
+ElseIf ( sNivel6 @<> '' & sNivel4 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel4, sNivel6, 1 );
+ElseIf ( sNivel7 @<> '' & sNivel4 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel4, sNivel7, 1 );
+ElseIf ( sNivel8 @<> '' & sNivel4 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel4, sNivel8, 1 );
+ElseIf ( sNivel9 @<> '' & sNivel4 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel4, sNivel9, 1 );
+ElseIf ( sNivel10 @<> '' & sNivel4 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel4, sNivel10, 1 );
+ElseIf ( sNivel4 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel4, sElm, 1 );
+EndIf;
+
+# Nivel 5
+If ( sNivel6 @<> '' & sNivel5 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel5, sNivel6, 1 );
+ElseIf ( sNivel7 @<> '' & sNivel5 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel5, sNivel7, 1 );
+ElseIf ( sNivel8 @<> '' & sNivel5 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel5, sNivel8, 1 );
+ElseIf ( sNivel9 @<> '' & sNivel5 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel5, sNivel9, 1 );
+ElseIf ( sNivel10 @<> '' & sNivel5 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel5, sNivel10, 1 );
+ElseIf ( sNivel5 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel5, sElm, 1 );
+EndIf;
+
+# Nivel 6
+If ( sNivel7 @<> '' & sNivel6 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel6, sNivel7, 1 );
+ElseIf ( sNivel8 @<> '' & sNivel6 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel6, sNivel8, 1 );
+ElseIf ( sNivel9 @<> '' & sNivel6 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel6, sNivel9, 1 );
+ElseIf ( sNivel10 @<> '' & sNivel6 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel6, sNivel10, 1 );
+ElseIf ( sNivel6 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel6, sElm, 1 );
+EndIf;
+
+# Nivel 7
+If ( sNivel8 @<> '' & sNivel7 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel7, sNivel8, 1 );
+ElseIf ( sNivel9 @<> '' & sNivel7 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel7, sNivel9, 1 );
+ElseIf ( sNivel10 @<> '' & sNivel7 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel7, sNivel10, 1 );
+ElseIf ( sNivel7 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel7, sElm, 1 );
+EndIf;
+
+# Nivel 8
+If ( sNivel9 @<> '' & sNivel8 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel8, sNivel9, 1 );
+ElseIf ( sNivel10 @<> '' & sNivel8 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel8, sNivel10, 1 );
+ElseIf ( sNivel8 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel8, sElm, 1 );
+EndIf;
+
+# Nivel 9
+If ( sNivel10 @<> '' & sNivel9 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel9, sNivel10, 1 );
+ElseIf ( sNivel9 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel9, sElm, 1 );
+EndIf;
+
+# Nivel 10
+If ( sNivel10 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel10, sElm, 1 );
+EndIf;
+#endregion
+#region Data
+# ===============================================================================================================
+#DATACOMMENT   Descrição:  Atualiza atributos (Descricao, Nível 1, Nível 2, Tipo Gasto) e o alias 'Código e Descrição'.
+# ===============================================================================================================
+
+cContadorRegistro = cContadorRegistro + 1;
+sContadorRegistro = NumberToString( cContadorRegistro );
+
+# Busca atributos do cubo mapa
+# ========================================
+sDescElement = CellGetS( cCuboMapa, vElement, 'Descricao' );
+sNivel1 = CellGetS( cCuboMapa, vElement, 'Nivel 1' );
+sNivel2 = CellGetS( cCuboMapa, vElement, 'Nivel 2' );
+sTipoGasto = CellGetS( cCuboMapa, vElement, 'Tipo Gasto' );
+sDim = cDimensao;
+
+# Grava atributos
+# ========================================
+AttrPutS( sDescElement, sDim, vElement, 'Descricao' );
+AttrPutS( sNivel1, sDim, vElement, 'Nivel 1' );
+AttrPutS( sNivel2, sDim, vElement, 'Nivel 2' );
+AttrPutS( sTipoGasto, sDim, vElement, 'Tipo Gasto' );
+
+# Alias Código + Descrição (no elemento folha)
+# ========================================
+sAlias = 'Código e Descrição';
+IF ( vElement @<> '' & sDescElement @<> '' );
+    AttrPutS( vElement | ' - ' | sDescElement, cDimensao, vElement, sAlias );
+ENDIF;
+#endregion
+#region Epilog
+# ===============================================================================================================
+#EPILOGCOMMENT   Descrição:  Registra o log de sucesso no cubo de controle SYS.150.
+# ===============================================================================================================
+
+cMensagemProcesso = 'Processo concluído com sucesso';
+CellPutS( TimSt( cHorarioInicio , '\Y-\m-\d \hh\im\ss' ), cCuboParametro, cProcesso, 'DataHora Fim' );
+CellPutS( cUsuario, cCuboParametro, cProcesso, 'Usuário' );
+CellPutS( cMensagemProcesso, cCuboParametro, cProcesso, 'Mensagem de Log' );
+CellPutS( sContadorRegistro, cCuboParametro, cProcesso, 'Registros Processados' );
+CellPutS( TimSt( Now - cHorarioInicio, ' \h:\i:\s'), cCuboParametro, cProcesso, 'Tempo de Execução' );
+
+# Nota de manutenção: o template original chama zCTI.Dim.Hierarchy.Consolidate.Orphans para
+# capturar folhas sem pai. Aqui não é necessário pois toda folha válida recebe pai pelo mapa;
+# caso surjam órfãos, reativar passando pDim=cDimensao e pTotalizador=cTotalizador.
+#endregion

@@ -1,0 +1,12 @@
+{
+	"@type":"Dimension",
+	"Name":"SYS.D.Linha",
+	"Hierarchies@Code.links":
+	[
+		"SYS.D.Linha.hierarchies/SYS.D.Linha.json"
+	],
+	"DefaultHierarchy":
+	{
+		"@id":"Dimensions('SYS.D.Linha')/Hierarchies('SYS.D.Linha')"
+	}
+}

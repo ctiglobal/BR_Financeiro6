@@ -1,0 +1,206 @@
+#region Prolog
+# ===============================================================================================================
+#GENERALCOMMENT             Descrição:         Cria/atualiza o rollup alternativo 'Total Tipo Gasto' na dimensão ALL.D.Centro_Custo (hierarquia virtual)
+#GENERALCOMMENT             Responsável:     Vitor Ribeiro
+#GENERALCOMMENT             Data Criação:    Julho/2026
+#
+#LASTCHANGE                 Alterações:
+#LASTCHANGE                 Responsavel Alterações:
+# ===============================================================================================================
+
+# ===============================================================================================================
+#PROLOGCOMMENT              Descrição:  Monta a hierarquia virtual de Tipo Gasto como rollup adicional (raiz alternativa) na hierarquia padrão.
+# ===============================================================================================================
+
+# =================================================================================
+#                                     Glosário
+# =================================================================================
+# Prefixos: v=entrada turbo / p=parâmetro / c=constante / n=numerica / s=string
+#
+# Observação de arquitetura: neste servidor a criação de hierarquia separada está desabilitada
+# (EnableNewHierarchyCreation), então a 'hierarquia virtual' de Tipo Gasto é implementada como
+# um segundo totalizador-raiz dentro da hierarquia padrão, compartilhando as mesmas folhas.
+# IMPORTANTE: este processo é ADITIVO e deve rodar DEPOIS do DIM.030.2 (Hier1), que faz o reset dos consolidados.
+# Otimização: a montagem suporta Nível 1 até Nível 10 de forma genérica (preencher sNivel2..10 se necessário).
+# =================================================================================
+
+# Informações da dimensão e cubo mapa (ALTERAR)
+# ========================================
+cDimensao    = 'ALL.D.Centro_Custo';
+cCuboMapa    = 'MAP.030.Centro_Custo';
+cTotalizador = 'Total Tipo Gasto';
+
+# Variáveis do padrão CTI (NÃO alterar)
+# ========================================
+cUsuario = IF( DimIx( '}Clients' , TM1User() ) = 0, 'Executed by Chore' , TM1User() );
+cCuboParametro = 'SYS.150.Controle_Cargas';
+cHorarioInicio = Now();
+cProcesso = GetProcessName();
+cMensagemProcesso = '';
+cContadorRegistro = 0;
+
+# Log inicial como falha
+# ========================================
+cMensagemProcesso = 'Processo com falha, contate o administrador para verificar os logs de erro do sistema';
+CellPutS( TimSt( cHorarioInicio , '\Y-\m-\d \hh\im\ss' ), cCuboParametro, cProcesso, 'DataHora Inicio' );
+CellPutS( TimSt( cHorarioInicio , '\Y-\m-\d \hh\im\ss' ), cCuboParametro, cProcesso, 'DataHora Fim' );
+CellPutS( cUsuario, cCuboParametro, cProcesso, 'Usuário' );
+CellPutS( cMensagemProcesso, cCuboParametro, cProcesso, 'Mensagem de Log' );
+CellPutS( '0', cCuboParametro, cProcesso, 'Registros Processados' );
+
+# Remove e recria apenas o totalizador deste rollup (não toca a Hier1)
+# ========================================
+IF( DimIx( cDimensao, cTotalizador ) <> 0 );
+   DimensionElementDelete( cDimensao, cTotalizador );
+ENDIF;
+DimensionElementInsert ( cDimensao, '', cTotalizador, 'C' );
+#endregion
+#region Metadata
+# ===============================================================================================================
+#METADATACOMMENT   Descrição:  Reconstrói o rollup de Tipo Gasto (Nível 1 até Nível 10) sob o totalizador alternativo.
+# ===============================================================================================================
+
+# Busca os níveis do rollup (Tipo Gasto = Nível 1; demais reservados para futuro)
+# ========================================
+sNivel1 = CellGetS( cCuboMapa, vElement, 'Tipo Gasto' );
+sNivel2 = '';
+sNivel3 = '';
+sNivel4 = '';
+sNivel5 = '';
+sNivel6 = '';
+sNivel7 = '';
+sNivel8 = '';
+sNivel9 = '';
+sNivel10 = '';
+
+sElm = vElement;
+sDim = cDimensao;
+sTot = cTotalizador;
+
+# Nivel Total
+If ( sNivel1 @<> '' );
+    DimensionElementComponentAdd ( sDim, sTot, sNivel1, 1 );
+ElseIf ( sNivel2 @<> '' );
+    DimensionElementComponentAdd ( sDim, sTot, sNivel2, 1 );
+ElseIf ( sNivel3 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sTot, sNivel3, 1 );
+ElseIf ( sNivel4 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sTot, sNivel4, 1 );
+ElseIf ( sNivel5 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sTot, sNivel5, 1 );
+ElseIf ( sNivel6 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sTot, sNivel6, 1 );
+ElseIf ( sNivel7 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sTot, sNivel7, 1 );
+ElseIf ( sNivel8 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sTot, sNivel8, 1 );
+ElseIf ( sNivel9 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sTot, sNivel9, 1 );
+ElseIf ( sNivel10 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sTot, sNivel10, 1 );
+Else;
+    DimensionElementComponentAdd ( sDim, sTot, sElm, 1 );
+EndIf;
+
+# Nivel 1
+If ( sNivel2 @<> '' & sNivel1 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sNivel1, sNivel2, 1 );
+ElseIf ( sNivel3 @<> '' & sNivel1 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sNivel1, sNivel3, 1 );
+ElseIf ( sNivel4 @<> ''  & sNivel1 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sNivel1, sNivel4, 1 );
+ElseIf ( sNivel5 @<> ''  & sNivel1 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sNivel1, sNivel5, 1 );
+ElseIf ( sNivel6 @<> ''  & sNivel1 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sNivel1, sNivel6, 1 );
+ElseIf ( sNivel7 @<> ''  & sNivel1 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sNivel1, sNivel7, 1 );
+ElseIf ( sNivel8 @<> ''  & sNivel1 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sNivel1, sNivel8, 1 );
+ElseIf ( sNivel9 @<> ''  & sNivel1 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sNivel1, sNivel9, 1 );
+ElseIf ( sNivel10 @<> ''  & sNivel1 @<> ''  );
+    DimensionElementComponentAdd ( sDim, sNivel1, sNivel10, 1 );
+ElseIf ( sNivel1 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel1, sElm, 1 );
+EndIf;
+
+# Nivel 2
+If ( sNivel3 @<> '' & sNivel2 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel2, sNivel3, 1 );
+ElseIf ( sNivel4 @<> '' & sNivel2 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel2, sNivel4, 1 );
+ElseIf ( sNivel5 @<> '' & sNivel2 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel2, sNivel5, 1 );
+ElseIf ( sNivel6 @<> '' & sNivel2 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel2, sNivel6, 1 );
+ElseIf ( sNivel7 @<> '' & sNivel2 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel2, sNivel7, 1 );
+ElseIf ( sNivel8 @<> '' & sNivel2 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel2, sNivel8, 1 );
+ElseIf ( sNivel9 @<> '' & sNivel2 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel2, sNivel9, 1 );
+ElseIf ( sNivel10 @<> '' & sNivel2 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel2, sNivel10, 1 );
+ElseIf ( sNivel2 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel2, sElm, 1 );
+EndIf;
+
+# Nivel 3 a Nivel 10 (reservados - preencher sNivel3..10 para hierarquias mais profundas)
+If ( sNivel4 @<> '' & sNivel3 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel3, sNivel4, 1 );
+ElseIf ( sNivel3 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel3, sElm, 1 );
+EndIf;
+If ( sNivel5 @<> '' & sNivel4 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel4, sNivel5, 1 );
+ElseIf ( sNivel4 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel4, sElm, 1 );
+EndIf;
+If ( sNivel6 @<> '' & sNivel5 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel5, sNivel6, 1 );
+ElseIf ( sNivel5 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel5, sElm, 1 );
+EndIf;
+If ( sNivel7 @<> '' & sNivel6 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel6, sNivel7, 1 );
+ElseIf ( sNivel6 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel6, sElm, 1 );
+EndIf;
+If ( sNivel8 @<> '' & sNivel7 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel7, sNivel8, 1 );
+ElseIf ( sNivel7 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel7, sElm, 1 );
+EndIf;
+If ( sNivel9 @<> '' & sNivel8 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel8, sNivel9, 1 );
+ElseIf ( sNivel8 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel8, sElm, 1 );
+EndIf;
+If ( sNivel10 @<> '' & sNivel9 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel9, sNivel10, 1 );
+ElseIf ( sNivel9 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel9, sElm, 1 );
+EndIf;
+If ( sNivel10 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel10, sElm, 1 );
+EndIf;
+#endregion
+#region Data
+# ===============================================================================================================
+#DATACOMMENT   Descrição:  Contador de registros processados (atributos já são gravados pela Hier1).
+# ===============================================================================================================
+cContadorRegistro = cContadorRegistro + 1;
+sContadorRegistro = NumberToString( cContadorRegistro );
+#endregion
+#region Epilog
+# ===============================================================================================================
+#EPILOGCOMMENT   Descrição:  Registra o log de sucesso no cubo de controle SYS.150.
+# ===============================================================================================================
+cMensagemProcesso = 'Processo concluído com sucesso';
+CellPutS( TimSt( cHorarioInicio , '\Y-\m-\d \hh\im\ss' ), cCuboParametro, cProcesso, 'DataHora Fim' );
+CellPutS( cUsuario, cCuboParametro, cProcesso, 'Usuário' );
+CellPutS( cMensagemProcesso, cCuboParametro, cProcesso, 'Mensagem de Log' );
+CellPutS( sContadorRegistro, cCuboParametro, cProcesso, 'Registros Processados' );
+CellPutS( TimSt( Now - cHorarioInicio, ' \h:\i:\s'), cCuboParametro, cProcesso, 'Tempo de Execução' );
+#endregion

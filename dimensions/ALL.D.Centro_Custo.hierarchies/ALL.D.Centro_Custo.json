@@ -1,0 +1,257 @@
+{
+	"@type":"Hierarchy",
+	"Name":"ALL.D.Centro_Custo",
+	"ElementsSortType":"ByHierarchy",
+	"ComponentsSortType":"ByName",
+	"Elements":
+	[
+		{
+			"Name":"Total Centro de Custo",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"DIR. OPERAÇÕES SP",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"OPERAÇÕES SP",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"OPER0001",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"OPER0002",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"OPER0003",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"OPER0004",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"OPER0005",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"OPER0006",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"DIR. SUPPLY CHAIN",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"SUPPLY CHAIN",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"SUPP0001",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"SUPP0002",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"SUPP0003",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"SUPP0004",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"SUPP0005",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"SUPP0006",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"SUPP0007",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"Total Tipo Gasto",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"Custo",
+			"Type":"Consolidated"
+		},
+		{
+			"Name":"Despesa",
+			"Type":"Consolidated"
+		}
+	],
+	"Edges":
+	[
+		{
+			"ParentName":"Total Centro de Custo",
+			"ComponentName":"DIR. OPERAÇÕES SP",
+			"Weight":1
+		},
+		{
+			"ParentName":"Total Centro de Custo",
+			"ComponentName":"DIR. SUPPLY CHAIN",
+			"Weight":1
+		},
+		{
+			"ParentName":"DIR. OPERAÇÕES SP",
+			"ComponentName":"OPERAÇÕES SP",
+			"Weight":1
+		},
+		{
+			"ParentName":"OPERAÇÕES SP",
+			"ComponentName":"OPER0001",
+			"Weight":1
+		},
+		{
+			"ParentName":"OPERAÇÕES SP",
+			"ComponentName":"OPER0002",
+			"Weight":1
+		},
+		{
+			"ParentName":"OPERAÇÕES SP",
+			"ComponentName":"OPER0003",
+			"Weight":1
+		},
+		{
+			"ParentName":"OPERAÇÕES SP",
+			"ComponentName":"OPER0004",
+			"Weight":1
+		},
+		{
+			"ParentName":"OPERAÇÕES SP",
+			"ComponentName":"OPER0005",
+			"Weight":1
+		},
+		{
+			"ParentName":"OPERAÇÕES SP",
+			"ComponentName":"OPER0006",
+			"Weight":1
+		},
+		{
+			"ParentName":"DIR. SUPPLY CHAIN",
+			"ComponentName":"SUPPLY CHAIN",
+			"Weight":1
+		},
+		{
+			"ParentName":"SUPPLY CHAIN",
+			"ComponentName":"SUPP0001",
+			"Weight":1
+		},
+		{
+			"ParentName":"SUPPLY CHAIN",
+			"ComponentName":"SUPP0002",
+			"Weight":1
+		},
+		{
+			"ParentName":"SUPPLY CHAIN",
+			"ComponentName":"SUPP0003",
+			"Weight":1
+		},
+		{
+			"ParentName":"SUPPLY CHAIN",
+			"ComponentName":"SUPP0004",
+			"Weight":1
+		},
+		{
+			"ParentName":"SUPPLY CHAIN",
+			"ComponentName":"SUPP0005",
+			"Weight":1
+		},
+		{
+			"ParentName":"SUPPLY CHAIN",
+			"ComponentName":"SUPP0006",
+			"Weight":1
+		},
+		{
+			"ParentName":"SUPPLY CHAIN",
+			"ComponentName":"SUPP0007",
+			"Weight":1
+		},
+		{
+			"ParentName":"Total Tipo Gasto",
+			"ComponentName":"Custo",
+			"Weight":1
+		},
+		{
+			"ParentName":"Total Tipo Gasto",
+			"ComponentName":"Despesa",
+			"Weight":1
+		},
+		{
+			"ParentName":"Custo",
+			"ComponentName":"OPER0002",
+			"Weight":1
+		},
+		{
+			"ParentName":"Custo",
+			"ComponentName":"SUPP0002",
+			"Weight":1
+		},
+		{
+			"ParentName":"Custo",
+			"ComponentName":"SUPP0003",
+			"Weight":1
+		},
+		{
+			"ParentName":"Custo",
+			"ComponentName":"SUPP0004",
+			"Weight":1
+		},
+		{
+			"ParentName":"Custo",
+			"ComponentName":"SUPP0005",
+			"Weight":1
+		},
+		{
+			"ParentName":"Custo",
+			"ComponentName":"SUPP0006",
+			"Weight":1
+		},
+		{
+			"ParentName":"Custo",
+			"ComponentName":"SUPP0007",
+			"Weight":1
+		},
+		{
+			"ParentName":"Despesa",
+			"ComponentName":"OPER0001",
+			"Weight":1
+		},
+		{
+			"ParentName":"Despesa",
+			"ComponentName":"OPER0003",
+			"Weight":1
+		},
+		{
+			"ParentName":"Despesa",
+			"ComponentName":"OPER0004",
+			"Weight":1
+		},
+		{
+			"ParentName":"Despesa",
+			"ComponentName":"OPER0005",
+			"Weight":1
+		},
+		{
+			"ParentName":"Despesa",
+			"ComponentName":"OPER0006",
+			"Weight":1
+		},
+		{
+			"ParentName":"Despesa",
+			"ComponentName":"SUPP0001",
+			"Weight":1
+		}
+	],
+	"Subsets@Code.links":[]
+}

@@ -1,0 +1,10 @@
+#region Prolog
+sLista = '';
+sArq = WildcardFileSearch( 'model_upload\*', '' );
+WHILE( sArq @<> '' );
+  sLista = sLista | '[' | sArq | '] ';
+  sArq = WildcardFileSearch( 'model_upload\*', sArq );
+END;
+IF( sLista @= '' ); sLista = '(vazio ou pasta inexistente)'; ENDIF;
+CellPutS( sLista, 'SYS.150.Controle_Cargas', 'zCTI.Diag.ListaModelUpload', 'Mensagem de Log' );
+#endregion

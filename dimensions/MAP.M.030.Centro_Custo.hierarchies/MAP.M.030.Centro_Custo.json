@@ -1,0 +1,24 @@
+{
+	"@type":"Hierarchy",
+	"Name":"MAP.M.030.Centro_Custo",
+	"Elements":
+	[
+		{
+			"Name":"Descricao",
+			"Type":"String"
+		},
+		{
+			"Name":"Nivel 1",
+			"Type":"String"
+		},
+		{
+			"Name":"Nivel 2",
+			"Type":"String"
+		},
+		{
+			"Name":"Tipo Gasto",
+			"Type":"String"
+		}
+	],
+	"Subsets@Code.links":[]
+}

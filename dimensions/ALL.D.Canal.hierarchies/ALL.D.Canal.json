@@ -1,0 +1,24 @@
+{
+	"@type":"Hierarchy",
+	"Name":"ALL.D.Canal",
+	"Elements":
+	[
+		{
+			"Name":"02",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"07",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"51",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"80",
+			"Type":"Numeric"
+		}
+	],
+	"Subsets@Code.links":[]
+}

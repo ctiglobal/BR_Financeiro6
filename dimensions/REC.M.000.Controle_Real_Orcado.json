@@ -1,0 +1,12 @@
+{
+	"@type":"Dimension",
+	"Name":"REC.M.000.Controle_Real_Orcado",
+	"Hierarchies@Code.links":
+	[
+		"REC.M.000.Controle_Real_Orcado.hierarchies/REC.M.000.Controle_Real_Orcado.json"
+	],
+	"DefaultHierarchy":
+	{
+		"@id":"Dimensions('REC.M.000.Controle_Real_Orcado')/Hierarchies('REC.M.000.Controle_Real_Orcado')"
+	}
+}

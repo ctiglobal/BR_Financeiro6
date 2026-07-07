@@ -1,6 +1,0 @@
-{
-	"@type":"Subset",
-	"Name":"Contas Vendas",
-	"Alias":"Descrição",
-	"Expression":"{{TM1FILTERBYPATTERN(TM1SubsetAll([ALL.D.CONTAS_RECEITAS].[ALL.D.CONTAS_RECEITAS]),\"*Vendas*\",\"Descrição\")}}"
-}

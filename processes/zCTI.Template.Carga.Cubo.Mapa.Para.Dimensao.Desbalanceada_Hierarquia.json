@@ -1,0 +1,24 @@
+{
+	"@type":"Process",
+	"Name":"zCTI.Template.Carga.Cubo.Mapa.Para.Dimensao.Desbalanceada_Hierarquia",
+	"HasSecurityAccess":false,
+	"Code@Code.link":"zCTI.Template.Carga.Cubo.Mapa.Para.Dimensao.Desbalanceada_Hierarquia.ti",
+	"DataSource":
+	{
+		"Type":"TM1DimensionSubset",
+		"dataSourceNameForClient":"MAP.D.Pessoa:MAP.D.Pessoa",
+		"dataSourceNameForServer":"MAP.D.Pessoa:MAP.D.Pessoa",
+		"subset":"All"
+	},
+	"Parameters":[],
+	"Variables":
+	[
+		{
+			"Name":"vElement",
+			"Type":"String",
+			"Position":1,
+			"StartByte":0,
+			"EndByte":0
+		}
+	]
+}

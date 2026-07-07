@@ -1,0 +1,12 @@
+{
+	"@type":"Process",
+	"Name":"zCTI.Seed.Premissas",
+	"HasSecurityAccess":false,
+	"Code@Code.link":"zCTI.Seed.Premissas.ti",
+	"DataSource":
+	{
+		"Type":"None"
+	},
+	"Parameters":[],
+	"Variables":[]
+}

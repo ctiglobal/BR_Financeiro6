@@ -1,6 +1,0 @@
-{
-	"@type":"Subset",
-	"Name":"Contas NivelN",
-	"Alias":"Descrição",
-	"Expression":"{{[ALL.D.CONTAS_RECEITAS].[ALL.D.CONTAS_RECEITAS].levels(0).MEMBERS}}"
-}

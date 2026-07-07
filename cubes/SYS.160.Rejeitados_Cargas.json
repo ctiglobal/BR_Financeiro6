@@ -1,0 +1,20 @@
+{
+	"@type":"Cube",
+	"Name":"SYS.160.Rejeitados_Cargas",
+	"Dimensions":
+	[
+		{
+			"@id":"Dimensions('}Processes')"
+		},
+		{
+			"@id":"Dimensions('}Clients')"
+		},
+		{
+			"@id":"Dimensions('SYS.D.Linha')"
+		},
+		{
+			"@id":"Dimensions('SYS.M.160.Rejeitados_Cargas')"
+		}
+	],
+	"Views@Code.links":[]
+}

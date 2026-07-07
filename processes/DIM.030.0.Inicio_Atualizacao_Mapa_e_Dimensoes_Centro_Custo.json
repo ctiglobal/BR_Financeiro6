@@ -1,0 +1,12 @@
+{
+	"@type":"Process",
+	"Name":"DIM.030.0.Inicio_Atualizacao_Mapa_e_Dimensoes_Centro_Custo",
+	"HasSecurityAccess":false,
+	"Code@Code.link":"DIM.030.0.Inicio_Atualizacao_Mapa_e_Dimensoes_Centro_Custo.ti",
+	"DataSource":
+	{
+		"Type":"None"
+	},
+	"Parameters":[],
+	"Variables":[]
+}

@@ -1,0 +1,24 @@
+{
+	"@type":"Process",
+	"Name":"DIM.010.3.cubo_MAP.010.para_dim_ALL.D.Categoria",
+	"HasSecurityAccess":false,
+	"Code@Code.link":"DIM.010.3.cubo_MAP.010.para_dim_ALL.D.Categoria.ti",
+	"DataSource":
+	{
+		"Type":"TM1DimensionSubset",
+		"dataSourceNameForClient":"",
+		"dataSourceNameForServer":"MAP.D.Produto",
+		"subset":"zAll"
+	},
+	"Parameters":[],
+	"Variables":
+	[
+		{
+			"Name":"vElement",
+			"Type":"String",
+			"Position":1,
+			"StartByte":0,
+			"EndByte":0
+		}
+	]
+}

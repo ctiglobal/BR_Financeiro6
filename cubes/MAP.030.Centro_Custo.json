@@ -1,0 +1,14 @@
+{
+	"@type":"Cube",
+	"Name":"MAP.030.Centro_Custo",
+	"Dimensions":
+	[
+		{
+			"@id":"Dimensions('MAP.D.Centro_Custo')"
+		},
+		{
+			"@id":"Dimensions('MAP.M.030.Centro_Custo')"
+		}
+	],
+	"Views@Code.links":[]
+}

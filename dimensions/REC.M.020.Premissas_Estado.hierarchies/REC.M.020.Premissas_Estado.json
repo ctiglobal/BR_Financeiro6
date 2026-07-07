@@ -1,0 +1,16 @@
+{
+	"@type":"Hierarchy",
+	"Name":"REC.M.020.Premissas_Estado",
+	"Elements":
+	[
+		{
+			"Name":"% ICMS",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"$ Preço Médio Frete",
+			"Type":"Numeric"
+		}
+	],
+	"Subsets@Code.links":[]
+}

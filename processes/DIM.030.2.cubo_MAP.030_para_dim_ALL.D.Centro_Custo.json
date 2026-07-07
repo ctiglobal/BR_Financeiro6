@@ -1,0 +1,24 @@
+{
+	"@type":"Process",
+	"Name":"DIM.030.2.cubo_MAP.030_para_dim_ALL.D.Centro_Custo",
+	"HasSecurityAccess":false,
+	"Code@Code.link":"DIM.030.2.cubo_MAP.030_para_dim_ALL.D.Centro_Custo.ti",
+	"DataSource":
+	{
+		"Type":"TM1DimensionSubset",
+		"dataSourceNameForClient":"",
+		"dataSourceNameForServer":"MAP.D.Centro_Custo",
+		"subset":"zAll"
+	},
+	"Parameters":[],
+	"Variables":
+	[
+		{
+			"Name":"vElement",
+			"Type":"String",
+			"Position":1,
+			"StartByte":0,
+			"EndByte":0
+		}
+	]
+}

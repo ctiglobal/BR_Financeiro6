@@ -1,0 +1,16 @@
+{
+	"@type":"Hierarchy",
+	"Name":"REC.M.010.Premissas_Gerais",
+	"Elements":
+	[
+		{
+			"Name":"% IPI",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"% PIS / COFINS",
+			"Type":"Numeric"
+		}
+	],
+	"Subsets@Code.links":[]
+}

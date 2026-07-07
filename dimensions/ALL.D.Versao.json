@@ -1,0 +1,12 @@
+{
+	"@type":"Dimension",
+	"Name":"ALL.D.Versao",
+	"Hierarchies@Code.links":
+	[
+		"ALL.D.Versao.hierarchies/ALL.D.Versao.json"
+	],
+	"DefaultHierarchy":
+	{
+		"@id":"Dimensions('ALL.D.Versao')/Hierarchies('ALL.D.Versao')"
+	}
+}

@@ -1,0 +1,24 @@
+#region Prolog
+# ===============================================================================================================
+#GENERALCOMMENT             Descrição:         Setup: configura no SYS.150.Controle_Cargas os parâmetros dos processos de carga do módulo CAPEX
+#GENERALCOMMENT             Responsável:     Vitor Ribeiro
+#GENERALCOMMENT             Data Criação:    Julho/2026
+#
+#LASTCHANGE                 Alterações:
+#LASTCHANGE                 Responsavel Alterações:
+# ===============================================================================================================
+
+# ===============================================================================================================
+#PROLOGCOMMENT              Descrição:  Define caminho fonte (model_upload), prefixo do arquivo e flags de Debug/Log para DIM.030.1 e CAP.020.0.
+# ===============================================================================================================
+
+cCubo = 'SYS.150.Controle_Cargas';
+cCaminho = 'model_upload\';
+CellPutS( cCaminho, cCubo, 'DIM.030.1.CSV_para_cubo_MAP.030.Centro_Custo', 'Caminho do Arquivo Fonte' );
+CellPutS( 'N', cCubo, 'DIM.030.1.CSV_para_cubo_MAP.030.Centro_Custo', 'Debug (S/N)' );
+CellPutS( 'N', cCubo, 'DIM.030.1.CSV_para_cubo_MAP.030.Centro_Custo', 'Gerar Log de Alteração (S/N)' );
+CellPutS( cCaminho, cCubo, 'CAP.020.0.CSV_para_cubo_CAP.200_Depreciacao', 'Caminho do Arquivo Fonte' );
+CellPutS( 'Base_Depreciacao', cCubo, 'CAP.020.0.CSV_para_cubo_CAP.200_Depreciacao', 'Prefixo do Arquivo' );
+CellPutS( 'N', cCubo, 'CAP.020.0.CSV_para_cubo_CAP.200_Depreciacao', 'Debug (S/N)' );
+CellPutS( 'N', cCubo, 'CAP.020.0.CSV_para_cubo_CAP.200_Depreciacao', 'Gerar Log de Alteração (S/N)' );
+#endregion

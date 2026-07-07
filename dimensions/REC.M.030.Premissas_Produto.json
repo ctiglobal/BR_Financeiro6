@@ -1,0 +1,12 @@
+{
+	"@type":"Dimension",
+	"Name":"REC.M.030.Premissas_Produto",
+	"Hierarchies@Code.links":
+	[
+		"REC.M.030.Premissas_Produto.hierarchies/REC.M.030.Premissas_Produto.json"
+	],
+	"DefaultHierarchy":
+	{
+		"@id":"Dimensions('REC.M.030.Premissas_Produto')/Hierarchies('REC.M.030.Premissas_Produto')"
+	}
+}

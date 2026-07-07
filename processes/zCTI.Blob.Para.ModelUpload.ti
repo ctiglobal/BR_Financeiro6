@@ -1,0 +1,31 @@
+#region Prolog
+cCuboParametro = 'SYS.150.Controle_Cargas';
+cProcesso = GetProcessName();
+cHorarioInicio = Now();
+cOrigem = pBlob | '.blb';
+cDestino = 'model_upload\' | pDestino;
+cContador = 0;
+IF( Trim(pBlob) @= '' % Trim(pDestino) @= '' );
+  DataSourceType = 'NULL';
+  ItemReject('Parametros pBlob e pDestino sao obrigatorios');
+ENDIF;
+IF( FileExists( cOrigem ) = 0 );
+  DataSourceType = 'NULL';
+  CellPutS( 'ERRO: blob de origem [' | cOrigem | '] nao existe no data directory', cCuboParametro, cProcesso, 'Mensagem de Log' );
+  ItemReject('Blob de origem nao existe: ' | cOrigem );
+ENDIF;
+DataSourceASCIIDelimiter = Char(9);
+DataSourceASCIIQuoteCharacter = '';
+DatasourceNameForServer = cOrigem;
+DatasourceNameForClient = cOrigem;
+#endregion
+#region Data
+cContador = cContador + 1;
+TextOutput( cDestino, vLine );
+#endregion
+#region Epilog
+sExiste = IF( FileExists( cDestino ) = 1, 'SIM', 'NAO' );
+CellPutS( 'Relay concluido: [' | cOrigem | '] -> [' | cDestino | '] linhas=' | NumberToString(cContador) | ' existe=' | sExiste, cCuboParametro, cProcesso, 'Mensagem de Log' );
+CellPutS( TimSt( cHorarioInicio , '\Y-\m-\d \hh\im\ss' ) , cCuboParametro, cProcesso, 'DataHora Fim' );
+CellPutS( NumberToString(cContador) , cCuboParametro, cProcesso, 'Registros Processados' );
+#endregion

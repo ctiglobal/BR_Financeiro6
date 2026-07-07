@@ -1,0 +1,18 @@
+#region Prolog
+cDim = 'ALL.D.Produto';
+cCtl = '}ElementAttributes_' | cDim;
+IF( DimIx(cCtl,'Descricao')=0 ); AttrInsert(cDim,'','Descricao','S'); ENDIF;
+IF( DimIx(cCtl,'Categoria')=0 ); AttrInsert(cDim,'','Categoria','S'); ENDIF;
+IF( DimIx(cCtl,'SubCategoria')=0 ); AttrInsert(cDim,'','SubCategoria','S'); ENDIF;
+IF( DimIx(cCtl,'Familia')=0 ); AttrInsert(cDim,'','Familia','S'); ENDIF;
+IF( DimIx(cCtl,'Marca')=0 ); AttrInsert(cDim,'','Marca','S'); ENDIF;
+IF( DimIx(cCtl,'Sabor')=0 ); AttrInsert(cDim,'','Sabor','S'); ENDIF;
+IF( DimIx(cCtl,'Apresentacao')=0 ); AttrInsert(cDim,'','Apresentacao','S'); ENDIF;
+IF( DimIx(cCtl,'Producao_ou_Revenda')=0 ); AttrInsert(cDim,'','Producao_ou_Revenda','S'); ENDIF;
+IF( DimIx(cCtl,'Retornavel')=0 ); AttrInsert(cDim,'','Retornavel','S'); ENDIF;
+IF( DimIx(cCtl,'Embalagem')=0 ); AttrInsert(cDim,'','Embalagem','S'); ENDIF;
+IF( DimIx(cCtl,'Código e Descrição')=0 ); AttrInsert(cDim,'','Código e Descrição','A'); ENDIF;
+cDim2 = 'ALL.D.Categoria';
+cCtl2 = '}ElementAttributes_' | cDim2;
+IF( DimIx(cCtl2,'Código e Descrição')=0 ); AttrInsert(cDim2,'','Código e Descrição','A'); ENDIF;
+#endregion

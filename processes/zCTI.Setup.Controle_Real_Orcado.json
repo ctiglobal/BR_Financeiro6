@@ -1,0 +1,12 @@
+{
+	"@type":"Process",
+	"Name":"zCTI.Setup.Controle_Real_Orcado",
+	"HasSecurityAccess":false,
+	"Code@Code.link":"zCTI.Setup.Controle_Real_Orcado.ti",
+	"DataSource":
+	{
+		"Type":"None"
+	},
+	"Parameters":[],
+	"Variables":[]
+}

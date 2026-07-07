@@ -1,0 +1,3 @@
+#region Prolog
+nRet = ExecuteProcess( 'DIM.010.1.CSV_para_cubo_MAP.010.Produto', 'pFile', pFile );
+#endregion
