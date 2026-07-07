@@ -9,9 +9,15 @@ divergências são tratadas como defeito. Derivada dos objetos existentes no rep
 |---|---|---|
 | `ALL` | Dimensões comuns/compartilhadas | `ALL.D.Ano`, `ALL.D.Produto`, `ALL.D.Versao` |
 | `CAP` | CAPEX / Investimentos | `CAP.200.Investimentos`, `CAP.M.200.Investimentos` |
-| `MAP` | Mapas de-para (staging) | `MAP.010.Produto`, `MAP.D.Centro_Custo` |
+| `FOL` | Folha de Pagamento | `FOL.100.Folha_Pagamento`, `FOL.010.Premissas_Gerais`, `FOL.M.100.Folha_Pagamento` |
+| `MAP` | Mapas de-para (staging) | `MAP.010.Produto`, `MAP.D.Centro_Custo`, `MAP.040.Cargos` |
 | `REC` | Receita e premissas | `REC.100.Receita`, `REC.030.Premissas_Produto` |
 | `SYS` | Sistema / controle de carga | `SYS.150.Controle_Cargas`, `SYS.160.Rejeitados_Cargas` |
+
+> **Prefixos de processo (TI):** além de `CUB`/`DIM` (ver seção Processos), o módulo de
+> Folha usa `RH` para a carga do realizado da folha
+> (`RH.020.0.CSV_para_cubo_FOL.100.Folha_Pagamento - Carga Realizado`), conforme o
+> desenho do "Desafio Final – Folha".
 
 ## Tipo de dimensão
 

@@ -1,0 +1,180 @@
+SKIPCHECK;
+
+# --------------------------------------------------------------------------------------------
+#Name  Modulo Folha de Pagamento - Realizado (carregado) + Projecao (Existente x Novos)
+#Desc  Escopo por versao via ELISANC no topo: so calcula nas dinamicas (T1/T2); RE e estaticas
+#      ficam STET (input). T1/T2: gate Real x Orcado via REC.000; se 'Real' espelha RE, senao
+#      projeta. Inputs (Contratacoes/Desligamentos/Pagamentos/Correcoes) sao medidas SEM regra
+#      (input puro). Base efetiva do realizado calculada em T1/T2. Encargos sobre Salario+13o+
+#      Ferias; provisoes 13o=Salario/12 e Ferias=Salario/9.
+#Date  07/07/2026
+#Author CTI Global
+# --------------------------------------------------------------------------------------------
+
+# ESCOPO DE CALCULO: so calcula nas versoes dinamicas (T1/T2 sob 'Dynamic Versions'); demais STET.
+[]=IF( ELISANC( 'ALL.D.Versao', 'Dynamic Versions', !ALL.D.Versao ) <> 0, CONTINUE, STET );
+
+# ============================================================================================
+# PREMISSAS (de FOL.010, no grao do cubo)
+# ============================================================================================
+['% Dissídio']=N:
+   DB('FOL.010.Premissas_Gerais', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, '% Dissídio');
+['% Reajuste Plano de Saúde']=N:
+   DB('FOL.010.Premissas_Gerais', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, '% Reajuste Plano de Saúde');
+['% Reajuste Vale Refeição']=N:
+   DB('FOL.010.Premissas_Gerais', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, '% Reajuste Vale Refeição');
+['% INSS']=N:
+   DB('FOL.010.Premissas_Gerais', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, '% INSS');
+['% FGTS']=N:
+   DB('FOL.010.Premissas_Gerais', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, '% FGTS');
+
+# ============================================================================================
+# MOVIMENTACAO DE HEADCOUNT
+#   Contratacoes / Desligamentos / HC em Ferias / Pagamentos / Correcoes: INPUT PURO (sem regra).
+#   Saldo Inicial HC: Real espelha RE; Orcado = Saldo Final HC do mes anterior (roll).
+#   Saldo Final HC: Real espelha RE; Orcado = Inicial + Contratacoes - Desligamentos.
+# ============================================================================================
+['Saldo Inicial HC']=N:
+   IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
+      DB('FOL.100.Folha_Pagamento', !ALL.D.Ano, !ALL.D.Mes, 'RE', !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, 'Saldo Inicial HC'),
+      DB('FOL.100.Folha_Pagamento',
+         IF( !ALL.D.Mes @= '01', NUMBERTOSTRING( NUMBR(!ALL.D.Ano) - 1 ), !ALL.D.Ano ),
+         IF( !ALL.D.Mes @= '01', '12', IF( NUMBR(!ALL.D.Mes) - 1 < 10, '0' | NUMBERTOSTRING( NUMBR(!ALL.D.Mes) - 1 ), NUMBERTOSTRING( NUMBR(!ALL.D.Mes) - 1 ) ) ),
+         !ALL.D.Versao, !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, 'Saldo Final HC' ) );
+
+['Saldo Final HC']=N:
+   IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
+      DB('FOL.100.Folha_Pagamento', !ALL.D.Ano, !ALL.D.Mes, 'RE', !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, 'Saldo Final HC'),
+      ['Saldo Inicial HC'] + ['Contratações (Input)'] - ['Desligamentos (Input)'] );
+
+# ============================================================================================
+# AREA DE PREMISSAS SALARIAIS (por cargo)
+#   Real = valor efetivo do realizado (carregado / HC). Orcado: Novos = Mapa (ATTRN) * (1+%);
+#   Existentes = mes anterior * (1+%). % Dissidio p/ salario; % Reajuste p/ beneficios.
+# ============================================================================================
+['$ Salário Base']=N:
+   IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
+      IF( ['Saldo Final HC'] <> 0, ['$ Salário'] / ['Saldo Final HC'], 0 ),
+      IF( !ALL.D.Existente_Novo @= 'Novos',
+         ATTRN('ALL.D.Cargos', !ALL.D.Cargos, '$ Salário Base') * ( 1 + ['% Dissídio'] ),
+         DB('FOL.100.Folha_Pagamento',
+            IF( !ALL.D.Mes @= '01', NUMBERTOSTRING( NUMBR(!ALL.D.Ano) - 1 ), !ALL.D.Ano ),
+            IF( !ALL.D.Mes @= '01', '12', IF( NUMBR(!ALL.D.Mes) - 1 < 10, '0' | NUMBERTOSTRING( NUMBR(!ALL.D.Mes) - 1 ), NUMBERTOSTRING( NUMBR(!ALL.D.Mes) - 1 ) ) ),
+            !ALL.D.Versao, !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ Salário Base' ) * ( 1 + ['% Dissídio'] ) ) );
+
+['$ Valor Unitário Plano de Saúde']=N:
+   IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
+      IF( ['Saldo Final HC'] <> 0, ['$ Plano de Saúde'] / ['Saldo Final HC'], 0 ),
+      IF( !ALL.D.Existente_Novo @= 'Novos',
+         ATTRN('ALL.D.Cargos', !ALL.D.Cargos, '$ Plano de Saúde') * ( 1 + ['% Reajuste Plano de Saúde'] ),
+         DB('FOL.100.Folha_Pagamento',
+            IF( !ALL.D.Mes @= '01', NUMBERTOSTRING( NUMBR(!ALL.D.Ano) - 1 ), !ALL.D.Ano ),
+            IF( !ALL.D.Mes @= '01', '12', IF( NUMBR(!ALL.D.Mes) - 1 < 10, '0' | NUMBERTOSTRING( NUMBR(!ALL.D.Mes) - 1 ), NUMBERTOSTRING( NUMBR(!ALL.D.Mes) - 1 ) ) ),
+            !ALL.D.Versao, !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ Valor Unitário Plano de Saúde' ) * ( 1 + ['% Reajuste Plano de Saúde'] ) ) );
+
+['$ Valor Unitário Vale Refeição']=N:
+   IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
+      IF( ['Saldo Final HC'] <> 0, ['$ Vale Refeição'] / ['Saldo Final HC'], 0 ),
+      IF( !ALL.D.Existente_Novo @= 'Novos',
+         ATTRN('ALL.D.Cargos', !ALL.D.Cargos, '$ Vale Refeição') * ( 1 + ['% Reajuste Vale Refeição'] ),
+         DB('FOL.100.Folha_Pagamento',
+            IF( !ALL.D.Mes @= '01', NUMBERTOSTRING( NUMBR(!ALL.D.Ano) - 1 ), !ALL.D.Ano ),
+            IF( !ALL.D.Mes @= '01', '12', IF( NUMBR(!ALL.D.Mes) - 1 < 10, '0' | NUMBERTOSTRING( NUMBR(!ALL.D.Mes) - 1 ), NUMBERTOSTRING( NUMBR(!ALL.D.Mes) - 1 ) ) ),
+            !ALL.D.Versao, !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ Valor Unitário Vale Refeição' ) * ( 1 + ['% Reajuste Vale Refeição'] ) ) );
+
+# ============================================================================================
+# DESPESAS PROJETADAS (Orcado). Real espelha RE.
+# ============================================================================================
+['$ Salário']=N:
+   IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
+      DB('FOL.100.Folha_Pagamento', !ALL.D.Ano, !ALL.D.Mes, 'RE', !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ Salário'),
+      ['$ Salário Base'] * ['Saldo Final HC'] );
+
+['$ Plano de Saúde']=N:
+   IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
+      DB('FOL.100.Folha_Pagamento', !ALL.D.Ano, !ALL.D.Mes, 'RE', !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ Plano de Saúde'),
+      ['$ Valor Unitário Plano de Saúde'] * ['Saldo Final HC'] );
+
+['$ Vale Refeição']=N:
+   IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
+      DB('FOL.100.Folha_Pagamento', !ALL.D.Ano, !ALL.D.Mes, 'RE', !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ Vale Refeição'),
+      ['$ Valor Unitário Vale Refeição'] * ['Saldo Final HC'] );
+
+['$ Provisão 13º Salário']=N:
+   IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
+      DB('FOL.100.Folha_Pagamento', !ALL.D.Ano, !ALL.D.Mes, 'RE', !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ Provisão 13º Salário'),
+      ['$ Salário'] / 12 );
+
+['$ Provisão Férias']=N:
+   IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
+      DB('FOL.100.Folha_Pagamento', !ALL.D.Ano, !ALL.D.Mes, 'RE', !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ Provisão Férias'),
+      ['$ Salário'] / 9 );
+
+['$ INSS']=N:
+   IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
+      DB('FOL.100.Folha_Pagamento', !ALL.D.Ano, !ALL.D.Mes, 'RE', !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ INSS'),
+      ( ['$ Salário'] + ['$ Provisão 13º Salário'] + ['$ Provisão Férias'] ) * ['% INSS'] );
+
+['$ FGTS']=N:
+   IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
+      DB('FOL.100.Folha_Pagamento', !ALL.D.Ano, !ALL.D.Mes, 'RE', !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ FGTS'),
+      ( ['$ Salário'] + ['$ Provisão 13º Salário'] + ['$ Provisão Férias'] ) * ['% FGTS'] );
+
+# ============================================================================================
+# MOVIMENTACAO DE PROVISOES (Saldo a Pagar). Pagamento/Correcao = input. Real espelha RE.
+#   Orcado: Saldo a Pagar = Saldo do mes anterior + Provisao - Pagamento + Correcao.
+# ============================================================================================
+['$ Saldo 13º Salário a Pagar']=N:
+   IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
+      DB('FOL.100.Folha_Pagamento', !ALL.D.Ano, !ALL.D.Mes, 'RE', !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ Saldo 13º Salário a Pagar'),
+      DB('FOL.100.Folha_Pagamento',
+         IF( !ALL.D.Mes @= '01', NUMBERTOSTRING( NUMBR(!ALL.D.Ano) - 1 ), !ALL.D.Ano ),
+         IF( !ALL.D.Mes @= '01', '12', IF( NUMBR(!ALL.D.Mes) - 1 < 10, '0' | NUMBERTOSTRING( NUMBR(!ALL.D.Mes) - 1 ), NUMBERTOSTRING( NUMBR(!ALL.D.Mes) - 1 ) ) ),
+         !ALL.D.Versao, !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ Saldo 13º Salário a Pagar' )
+      + ['$ Provisão 13º Salário'] - ['$ Pagamento 13º Salário'] + ['$ Correção Saldo 13º Salário'] );
+
+['$ Saldo Férias a Pagar']=N:
+   IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
+      DB('FOL.100.Folha_Pagamento', !ALL.D.Ano, !ALL.D.Mes, 'RE', !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ Saldo Férias a Pagar'),
+      DB('FOL.100.Folha_Pagamento',
+         IF( !ALL.D.Mes @= '01', NUMBERTOSTRING( NUMBR(!ALL.D.Ano) - 1 ), !ALL.D.Ano ),
+         IF( !ALL.D.Mes @= '01', '12', IF( NUMBR(!ALL.D.Mes) - 1 < 10, '0' | NUMBERTOSTRING( NUMBR(!ALL.D.Mes) - 1 ), NUMBERTOSTRING( NUMBR(!ALL.D.Mes) - 1 ) ) ),
+         !ALL.D.Versao, !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ Saldo Férias a Pagar' )
+      + ['$ Provisão Férias'] - ['$ Pagamento Férias'] + ['$ Correção Saldo Férias a Pagar'] );
+
+FEEDERS;
+
+# --- Caminho Real: feeder padrao de versao (RE alimenta as versoes dinamicas T1/T2) ---
+['ALL.D.Versao':'ALL.D.Versao':'RE'] => ['ALL.D.Versao':'ALL.D.Versao':'Dynamic Versions'];
+
+# --- Caminho Orcado: Saldo Final HC e $ Salario alimentam os derivados na mesma celula ---
+['Saldo Final HC'] => ['$ Salário'], ['$ Plano de Saúde'], ['$ Vale Refeição'],
+   ['$ Salário Base'], ['$ Valor Unitário Plano de Saúde'], ['$ Valor Unitário Vale Refeição'],
+   ['% Dissídio'], ['% Reajuste Plano de Saúde'], ['% Reajuste Vale Refeição'], ['% INSS'], ['% FGTS'], ['Saldo Inicial HC'];
+['$ Salário'] => ['$ Provisão 13º Salário'], ['$ Provisão Férias'], ['$ INSS'], ['$ FGTS'],
+   ['$ Saldo 13º Salário a Pagar'], ['$ Saldo Férias a Pagar'];
+
+# --- Caminho Orcado: inputs de movimentacao (medidas puras) alimentam o Saldo Final HC ---
+['Contratações (Input)'] => ['Saldo Final HC'];
+['Desligamentos (Input)'] => ['Saldo Final HC'];
+
+# --- Caminho Orcado: roll-forward cross-mes (mes M alimenta M+1; Dezembro vira Janeiro do ano+1) ---
+['Saldo Final HC'] =>
+   DB('FOL.100.Folha_Pagamento',
+      IF( !ALL.D.Mes @= '12', NUMBERTOSTRING( NUMBR(!ALL.D.Ano) + 1 ), !ALL.D.Ano ),
+      IF( !ALL.D.Mes @= '12', '01', IF( NUMBR(!ALL.D.Mes) + 1 < 10, '0' | NUMBERTOSTRING( NUMBR(!ALL.D.Mes) + 1 ), NUMBERTOSTRING( NUMBR(!ALL.D.Mes) + 1 ) ) ),
+      !ALL.D.Versao, !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, 'Saldo Final HC' ),
+   DB('FOL.100.Folha_Pagamento',
+      IF( !ALL.D.Mes @= '12', NUMBERTOSTRING( NUMBR(!ALL.D.Ano) + 1 ), !ALL.D.Ano ),
+      IF( !ALL.D.Mes @= '12', '01', IF( NUMBR(!ALL.D.Mes) + 1 < 10, '0' | NUMBERTOSTRING( NUMBR(!ALL.D.Mes) + 1 ), NUMBERTOSTRING( NUMBR(!ALL.D.Mes) + 1 ) ) ),
+      !ALL.D.Versao, !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, 'Saldo Inicial HC' );
+['$ Saldo 13º Salário a Pagar'] =>
+   DB('FOL.100.Folha_Pagamento',
+      IF( !ALL.D.Mes @= '12', NUMBERTOSTRING( NUMBR(!ALL.D.Ano) + 1 ), !ALL.D.Ano ),
+      IF( !ALL.D.Mes @= '12', '01', IF( NUMBR(!ALL.D.Mes) + 1 < 10, '0' | NUMBERTOSTRING( NUMBR(!ALL.D.Mes) + 1 ), NUMBERTOSTRING( NUMBR(!ALL.D.Mes) + 1 ) ) ),
+      !ALL.D.Versao, !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ Saldo 13º Salário a Pagar' );
+['$ Saldo Férias a Pagar'] =>
+   DB('FOL.100.Folha_Pagamento',
+      IF( !ALL.D.Mes @= '12', NUMBERTOSTRING( NUMBR(!ALL.D.Ano) + 1 ), !ALL.D.Ano ),
+      IF( !ALL.D.Mes @= '12', '01', IF( NUMBR(!ALL.D.Mes) + 1 < 10, '0' | NUMBERTOSTRING( NUMBR(!ALL.D.Mes) + 1 ), NUMBERTOSTRING( NUMBR(!ALL.D.Mes) + 1 ) ) ),
+      !ALL.D.Versao, !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ Saldo Férias a Pagar' );

@@ -29,6 +29,25 @@ Todo cálculo é precedido de um comentário estruturado:
 - Versão `RE` e estáticas `F1..F11`: **carga direta** → use `STET` (mantém o valor
   gravado, não recalcula).
 
+## Escopo de versão por regra de área (só dinâmicas calculam)
+
+Em cubos multi-versão, **não** repita o gate de versão em cada medida. Coloque uma
+**regra de área** no topo (logo após `SKIPCHECK;`) que restringe o cálculo às
+versões dinâmicas (`T1`/`T2`, filhas do consolidado `Dynamic Versions`); `RE` e as
+estáticas caem em `STET` e permanecem como **input puro**:
+
+```
+[]=IF( ELISANC( 'ALL.D.Versao', 'Dynamic Versions', !ALL.D.Versao ) <> 0,
+       CONTINUE, STET );
+```
+
+- `ELISANC(dim, consolidado, elemento)` retorna `<>0` quando o elemento é
+  descendente do consolidado → `CONTINUE` deixa as regras de medida abaixo agirem.
+- Caso contrário (`RE` e estáticas) → `STET`: a célula é o valor gravado (carga).
+- Assim as regras de medida só precisam do gate Real×Orçado (espelhar `RE` vs.
+  calcular premissa), sem repetir a checagem de versão. **`RE` nunca calcula** —
+  os derivados do realizado existem apenas em `T1`/`T2`.
+
 ## Operadores e funções idiomáticos
 
 - `@=` compara strings; `%` é **OR** lógico; `&` é AND.
@@ -44,6 +63,14 @@ Todo cálculo é precedido de um comentário estruturado:
 - Feeder deve ser tão preciso quanto possível — super-feed degrada performance;
   sub-feed causa valores faltando.
 - Ao alterar um `DB()` de origem, **reveja o feeder correspondente**.
+- **Feeder de versão (multi-versão):** o realizado precisa alimentar o espelho nas
+  versões dinâmicas. Padrão:
+
+  ```
+  ['ALL.D.Versao':'ALL.D.Versao':'RE'] => ['ALL.D.Versao':'ALL.D.Versao':'Dynamic Versions'];
+  ```
+
+  Sem ele, as células espelhadas de `RE` em `T1`/`T2` não aparecem em consolidação.
 
 ## Antes de gravar
 
