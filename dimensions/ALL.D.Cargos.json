@@ -1,0 +1,12 @@
+{
+	"@type":"Dimension",
+	"Name":"ALL.D.Cargos",
+	"Hierarchies@Code.links":
+	[
+		"ALL.D.Cargos.hierarchies/ALL.D.Cargos.json"
+	],
+	"DefaultHierarchy":
+	{
+		"@id":"Dimensions('ALL.D.Cargos')/Hierarchies('ALL.D.Cargos')"
+	}
+}

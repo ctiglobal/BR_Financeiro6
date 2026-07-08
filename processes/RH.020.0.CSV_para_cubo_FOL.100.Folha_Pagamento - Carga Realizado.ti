@@ -1,0 +1,645 @@
+#region Prolog
+# ===============================================================================================================
+#GENERALCOMMENT             Descrição:        Carrega o realizado de Folha do CSV para o cubo FOL.100.Folha_Pagamento
+#GENERALCOMMENT             Responsável:      CTI Global
+#GENERALCOMMENT             Data Criação:     Julho/2026
+#
+#LASTCHANGE                 Alterações:       Reescrito no padrão zCTI.Template.Carga.Arquivo.Para.Cubo (legibilidade)
+#LASTCHANGE                 Responsavel:      CTI Global
+# ===============================================================================================================
+
+# ===============================================================================================================
+#PROLOGCOMMENT              Descrição:        Valida parâmetros (Ano/Mês/Versão) e arquivo fonte; limpa APENAS a fatia
+#PROLOGCOMMENT                                carregada (Ano/Mês/Versão/Existentes) via ViewZeroOut. NUNCA CubeClearData
+#PROLOGCOMMENT                                num cubo de dados. Grava sempre em versão RE, Existente_Novo = 'Existentes'.
+# ===============================================================================================================
+
+# =================================================================================
+#                                   Glossário
+# =================================================================================
+# Prefixos de Variáveis
+# v - Variável de entrada  - coluna do arquivo fonte
+# p - Parâmetro de entrada - input do usuário no disparo do processo
+# c - Constante            - valor fixo, não alterado durante o processo
+# s - String / n - Numérica
+#
+# Variáveis que caracterizam esta carga
+# cCuboDestino     - Cubo de destino da carga
+# cExistenteNovo   - Dimensão Existente_Novo travada em 'Existentes' (realizado)
+
+
+# =================================================================================
+# Variáveis do padrão CTI que caracterizam esta carga
+# =================================================================================
+cCuboDestino     = 'FOL.100.Folha_Pagamento';
+cExistenteNovo   = 'Existentes';
+
+
+# =================================================================================
+# Recupera o usuário que executou o processo
+# =================================================================================
+cUsuario = IF( DimIx( '}Clients' , TM1User() ) = 0, 'Executed by Chore' , TM1User() );
+
+
+# =================================================================================
+# Variáveis de controle do processo (não alterar)
+# =================================================================================
+cCuboParametro            = 'SYS.150.Controle_Cargas';
+cCuboRejeitado            = 'SYS.160.Rejeitados_Cargas';
+cCuboPropriedade          = '}CubeProperties';
+cHorarioInicio            = Now();
+cProcesso                 = GetProcessName();
+cMensagemRegistro         = '';
+cMensagemProcesso         = '';
+cExisteRegistroRejeitado  = 0;
+cExisteCabecalhoRejeitado = 0;
+cTipoErro                 = 0;
+cContadorRegistro         = 0;
+cContadorRejeitados       = 0;
+sContadorRegistro         = '0';
+
+
+# =================================================================================
+# Variáveis lidas do cubo de controle (SYS.150)
+# =================================================================================
+cCaminhoArquivoFonte = CellGetS( cCuboParametro , cProcesso , 'Caminho do Arquivo Fonte' );
+cUtilizarDebug       = CellGetS( cCuboParametro , cProcesso , 'Debug (S/N)' );
+cUtilizarDebug       = IF( cUtilizarDebug @= 'S', 'S', 'N' );
+
+
+# =================================================================================
+# Normaliza os parâmetros e monta o nome do arquivo quando não informado
+# =================================================================================
+pAno    = Trim( pAno );
+pVersao = Trim( pVersao );
+pMes    = FILL( '0', 2 - LONG( Trim( pMes ) ) ) | Trim( pMes );
+
+IF( Trim( pFile ) @= '' );
+   pFile = 'Base_Folha_Pagamento_Realizada_' | pAno | '_' | pMes | '.csv';
+ENDIF;
+
+
+# =================================================================================
+# Define os separadores do arquivo
+# =================================================================================
+cSeparadorMilhar  = '.';
+cSeparadorDecimal = ',';
+
+DataSourceASCIIDelimiter          = ';';
+DataSourceASCIIThousandSeparator  = cSeparadorMilhar;
+DataSourceASCIIDecimalSeparator   = cSeparadorDecimal;
+DataSourceQuoteCharacter          = '';
+
+
+# =================================================================================
+# Define o Log inicial da carga como falha
+# Registra esse log logo no início para garantir que exista um log de falha,
+# caso o processo não chegue ao próximo registro por uma falha inesperada
+# =================================================================================
+CellPutS( TimSt( cHorarioInicio , '\Y-\m-\d \hh\im\ss' ), cCuboParametro, cProcesso, 'DataHora Inicio' );
+CellPutS( TimSt( cHorarioInicio , '\Y-\m-\d \hh\im\ss' ), cCuboParametro, cProcesso, 'DataHora Fim' );
+CellPutS( cUsuario, cCuboParametro, cProcesso, 'Usuário' );
+CellPutS( 'Processo com falha, contate o administrador para verificar os logs de erro do sistema', cCuboParametro, cProcesso, 'Mensagem de Log' );
+CellPutS( '0', cCuboParametro, cProcesso, 'Registros Processados' );
+
+
+# =================================================================================
+# Validação dos parâmetros
+# Teste 1 - Parâmetro não informado
+# Teste 2 - Se o parâmetro informado existe na dimensão de validação
+# (pAno só exige não-vazio; anos novos são inseridos na aba Metadata)
+# =================================================================================
+
+# Parâmetro Ano
+# =========================
+IF( pAno @= '' );
+   cTipoErro = 1;
+   DataSourceType = 'NULL';
+   cMensagemProcesso = 'O parâmetro    [ Ano ]    não foi informado';
+   ItemReject( cMensagemProcesso );
+ENDIF;
+
+
+# Parâmetro Mês
+# =========================
+IF( pMes @= '' );
+   cTipoErro = 1;
+   DataSourceType = 'NULL';
+   cMensagemProcesso = 'O parâmetro    [ Mês ]    não foi informado';
+   ItemReject( cMensagemProcesso );
+ELSEIF( DimIx( 'ALL.D.Mes', pMes ) = 0 );
+   cTipoErro = 1;
+   DataSourceType = 'NULL';
+   cMensagemProcesso = 'O elemento    [ ' | pMes | ' ]    não existe na dimensão    [ ALL.D.Mes ]';
+   ItemReject( cMensagemProcesso );
+ENDIF;
+
+
+# Parâmetro Versão
+# =========================
+IF( pVersao @= '' );
+   cTipoErro = 1;
+   DataSourceType = 'NULL';
+   cMensagemProcesso = 'O parâmetro    [ Versão ]    não foi informado';
+   ItemReject( cMensagemProcesso );
+ELSEIF( DimIx( 'ALL.D.Versao', pVersao ) = 0 );
+   cTipoErro = 1;
+   DataSourceType = 'NULL';
+   cMensagemProcesso = 'O elemento    [ ' | pVersao | ' ]    não existe na dimensão    [ ALL.D.Versao ]';
+   ItemReject( cMensagemProcesso );
+ENDIF;
+
+
+# =================================================================================
+# Validação do arquivo de origem e pasta
+# Teste 1 - Se o caminho do arquivo fonte foi preenchido no cubo de controle
+# Teste 2 - Se o arquivo fonte existe na pasta informada
+# =================================================================================
+
+# Aborta se o caminho do arquivo fonte não foi informado
+# ======================================================
+IF( cCaminhoArquivoFonte @= '' );
+   cTipoErro = 1;
+   DataSourceType = 'NULL';
+   cMensagemProcesso = 'O caminho onde está o arquivo fonte não foi informado, informe no cubo:   "' | cCuboParametro | '"';
+   ItemReject( cMensagemProcesso );
+ENDIF;
+
+
+# Insere "\" no final do caminho caso ainda não tenha
+# ======================================================
+cCaminhoArquivoFonte = IF( SUBST( cCaminhoArquivoFonte , LONG( cCaminhoArquivoFonte ) , 1 ) @<> '\' , cCaminhoArquivoFonte | '\' , cCaminhoArquivoFonte );
+
+
+# Monta o caminho completo
+# ======================================================
+cNomeArquivoFonteCompleto = cCaminhoArquivoFonte | pFile;
+
+
+# Aborta se o arquivo fonte não existir na pasta de origem
+# ======================================================
+IF( FileExists( cNomeArquivoFonteCompleto ) = 0 );
+   cTipoErro = 1;
+   DataSourceType = 'NULL';
+   cMensagemProcesso = 'O arquivo   "' | pFile | '"   não existe no diretório:   "' | cCaminhoArquivoFonte | '"';
+   ItemReject( cMensagemProcesso );
+ENDIF;
+
+
+# =================================================================================
+# Definição da Origem de Dados
+# =================================================================================
+DatasourceNameForServer = cNomeArquivoFonteCompleto;
+DatasourceNameForClient = cNomeArquivoFonteCompleto;
+
+
+#Region View Limpeza
+# =================================================================================
+# Limpeza APENAS da fatia carregada (Ano / Mês / Versão / Existentes)
+# NUNCA CubeClearData num cubo de dados: apagaria todos os anos/versões/realizado
+# já carregados. Aqui filtramos a fatia numa view temporária e aplicamos ViewZeroOut.
+# =================================================================================
+
+cSuprimirConsolidado      = 'S';
+cSuprimirZero             = 'N';
+cSuprimirCamposCalculados = 'S';
+cViewTemporaria           = 'S';
+nViewTemporaria           = IF( cViewTemporaria @= 'S', 1, 0 );
+
+
+# Desliga o log do cubo durante a limpeza/carga
+# ======================================================
+CellPutS( 'NO', cCuboPropriedade, cCuboDestino, 'LOGGING' );
+
+
+# Define nome da view e subset de limpeza
+# ======================================================
+cViewDestino   = 'processo.' | cProcesso | '.Limpeza.' | TimSt( cHorarioInicio, '\Y-\m-\d \hh\im\ss' );
+cSubsetDestino = cViewDestino;
+
+
+# Cria a view de limpeza
+# ======================================================
+ViewCreate( cCuboDestino , cViewDestino , nViewTemporaria );
+
+
+# Filtra a fatia por Ano
+# ======================================================
+cDimensao = 'ALL.D.Ano';
+cElemento = pAno;
+SubsetCreate( cDimensao, cSubsetDestino , nViewTemporaria );
+ViewSubsetAssign( cCuboDestino , cViewDestino, cDimensao , cSubsetDestino );
+SubsetElementInsert( cDimensao, cSubsetDestino, cElemento , 1 );
+
+
+# Filtra a fatia por Mês
+# ======================================================
+cDimensao = 'ALL.D.Mes';
+cElemento = pMes;
+SubsetCreate( cDimensao, cSubsetDestino , nViewTemporaria );
+ViewSubsetAssign( cCuboDestino , cViewDestino, cDimensao , cSubsetDestino );
+SubsetElementInsert( cDimensao, cSubsetDestino, cElemento , 1 );
+
+
+# Filtra a fatia por Versão
+# ======================================================
+cDimensao = 'ALL.D.Versao';
+cElemento = pVersao;
+SubsetCreate( cDimensao, cSubsetDestino , nViewTemporaria );
+ViewSubsetAssign( cCuboDestino , cViewDestino, cDimensao , cSubsetDestino );
+SubsetElementInsert( cDimensao, cSubsetDestino, cElemento , 1 );
+
+
+# Filtra a fatia por Existente_Novo ('Existentes' - realizado)
+# ======================================================
+cDimensao = 'ALL.D.Existente_Novo';
+cElemento = cExistenteNovo;
+SubsetCreate( cDimensao, cSubsetDestino , nViewTemporaria );
+ViewSubsetAssign( cCuboDestino , cViewDestino, cDimensao , cSubsetDestino );
+SubsetElementInsert( cDimensao, cSubsetDestino, cElemento , 1 );
+
+
+# Configuração da view e limpeza da fatia
+# ======================================================
+ViewExtractSkipCalcsSet( cCuboDestino, cViewDestino, IF( cSuprimirConsolidado @= 'S', 1, 0 ) );
+ViewExtractSkipZeroesSet( cCuboDestino, cViewDestino, IF( cSuprimirZero @= 'S', 1, 0 ) );
+ViewExtractSkipRuleValuesSet( cCuboDestino, cViewDestino, IF( cSuprimirCamposCalculados @= 'S', 1, 0 ) );
+ViewZeroOut( cCuboDestino , cViewDestino );
+
+#EndRegion
+
+
+#Region Limpeza Rejeitados
+# =================================================================================
+# Limpa o cubo de Rejeitados para este processo/usuário
+# =================================================================================
+cViewRejeitado   = 'processo.' | cProcesso | '.Rejeitados.Limpeza.' | TimSt( cHorarioInicio, '\Y-\m-\d \hh\im\ss' );
+cSubsetRejeitado = cViewRejeitado;
+
+ViewCreate( cCuboRejeitado , cViewRejeitado , 1 );
+
+cDimensao = '}Clients';
+cElemento = cUsuario;
+SubsetCreate( cDimensao, cSubsetRejeitado , 1 );
+ViewSubsetAssign( cCuboRejeitado , cViewRejeitado, cDimensao , cSubsetRejeitado );
+SubsetElementInsert( cDimensao, cSubsetRejeitado, cElemento , 1 );
+
+cDimensao = '}Processes';
+cElemento = cProcesso;
+SubsetCreate( cDimensao, cSubsetRejeitado , 1 );
+ViewSubsetAssign( cCuboRejeitado , cViewRejeitado, cDimensao , cSubsetRejeitado );
+SubsetElementInsert( cDimensao, cSubsetRejeitado, cElemento , 1 );
+
+ViewExtractSkipCalcsSet( cCuboRejeitado, cViewRejeitado, 1 );
+ViewExtractSkipZeroesSet( cCuboRejeitado, cViewRejeitado, 1 );
+ViewExtractSkipRuleValuesSet( cCuboRejeitado, cViewRejeitado, 1 );
+ViewZeroOut( cCuboRejeitado, cViewRejeitado );
+
+#EndRegion
+
+
+# =================================================================================
+# Cria o atributo de cabeçalho de Rejeitados para este processo
+# =================================================================================
+IF( CubeExists( '}ElementAttributes_SYS.M.160.Rejeitados_Cargas' ) <> 0 );
+   IF( DimensionElementExists( '}ElementAttributes_SYS.M.160.Rejeitados_Cargas', cProcesso ) = 0 );
+      AttrInsert( 'SYS.M.160.Rejeitados_Cargas', '', cProcesso, 'S' );
+   ENDIF;
+ELSE;
+   AttrInsert( 'SYS.M.160.Rejeitados_Cargas', '', cProcesso, 'S' );
+ENDIF;
+#endregion
+#region Metadata
+# ===============================================================================================================
+#METADATACOMMENT            Descrição:        Insere anos novos na dimensão ALL.D.Ano (folha numérica)
+# ===============================================================================================================
+
+vAno = Trim( vAno );
+
+IF( vAno @<> '' & DimIx( 'ALL.D.Ano', vAno ) = 0 );
+   DimensionElementInsert( 'ALL.D.Ano', '', vAno, 'n' );
+ENDIF;
+#endregion
+#region Data
+# ===============================================================================================================
+#DATACOMMENT                Descrição:        Valida cada registro e grava as medidas do realizado no cubo
+# ===============================================================================================================
+
+# =================================================================================
+# Contador de registros processados
+# =================================================================================
+cContadorRegistro = cContadorRegistro + 1;
+sContadorRegistro = NumberToString( cContadorRegistro );
+
+
+# =================================================================================
+# Retira os espaços em branco das variáveis
+# =================================================================================
+vAno            = Trim( vAno );
+vMes            = Trim( vMes );
+vCentroCusto    = Trim( vCentroCusto );
+vCargo          = Trim( vCargo );
+vHeadCount      = Trim( vHeadCount );
+vMassaSalarial  = Trim( vMassaSalarial );
+vPlanoSaude     = Trim( vPlanoSaude );
+vValeRefeicao   = Trim( vValeRefeicao );
+vValeTransporte = Trim( vValeTransporte );
+vINSS           = Trim( vINSS );
+vFGTS           = Trim( vFGTS );
+vProvisao13     = Trim( vProvisao13 );
+vSaldo13        = Trim( vSaldo13 );
+vProvisaoFerias = Trim( vProvisaoFerias );
+vSaldoFerias    = Trim( vSaldoFerias );
+
+
+# =================================================================================
+# Pula o registro se as colunas-chave estiverem todas vazias (linha em branco)
+# =================================================================================
+IF( '' @= vAno & '' @= vMes & '' @= vCentroCusto & '' @= vCargo );
+   ItemSkip;
+ENDIF;
+
+
+# =================================================================================
+# Força 2 dígitos na variável vMes
+# =================================================================================
+vMes = FILL( '0', 2 - LONG( Trim( vMes ) ) ) | Trim( vMes );
+
+
+# =================================================================================
+# Trata as colunas de valor: vazio ou '-' viram '0'
+# =================================================================================
+vHeadCount      = IF( vHeadCount      @= '' % vHeadCount      @= '-', '0', vHeadCount );
+vMassaSalarial  = IF( vMassaSalarial  @= '' % vMassaSalarial  @= '-', '0', vMassaSalarial );
+vPlanoSaude     = IF( vPlanoSaude     @= '' % vPlanoSaude     @= '-', '0', vPlanoSaude );
+vValeRefeicao   = IF( vValeRefeicao   @= '' % vValeRefeicao   @= '-', '0', vValeRefeicao );
+vINSS           = IF( vINSS           @= '' % vINSS           @= '-', '0', vINSS );
+vFGTS           = IF( vFGTS           @= '' % vFGTS           @= '-', '0', vFGTS );
+vProvisao13     = IF( vProvisao13     @= '' % vProvisao13     @= '-', '0', vProvisao13 );
+vSaldo13        = IF( vSaldo13        @= '' % vSaldo13        @= '-', '0', vSaldo13 );
+vProvisaoFerias = IF( vProvisaoFerias @= '' % vProvisaoFerias @= '-', '0', vProvisaoFerias );
+vSaldoFerias    = IF( vSaldoFerias    @= '' % vSaldoFerias    @= '-', '0', vSaldoFerias );
+
+
+# =================================================================================
+# Marca o registro para rejeitar
+# Caso a coluna esteja em branco, não exista na dimensão ou seja um totalizador
+# =================================================================================
+sDim = 'ALL.D.Ano';
+sElm = vAno;
+sCol = 'Ano';
+
+IF( cExisteRegistroRejeitado = 0 );
+   IF( sElm @= '' );
+      cMensagemRegistro = 'A coluna    [ ' | sCol | ' ]    está em branco e é obrigatório ter algum valor';
+      cExisteRegistroRejeitado = 1;
+   ELSEIF( DimIx( sDim , sElm ) = 0 );
+      cMensagemRegistro = 'A coluna    [ ' | sCol | ' ]    contém o valor:    [ ' | sElm | ' ]    que não existe na dimensão:    [ ' | sDim | ' ]';
+      cExisteRegistroRejeitado = 1;
+   ELSEIF( DType( sDim , sElm ) @= 'C' );
+      cMensagemRegistro = 'A coluna    [ ' | sCol | ' ]    contém o valor:    [ ' | sElm | ' ]    que é um totalizador na dimensão:    [ ' | sDim | ' ]    totalizadores não podem receber carga';
+      cExisteRegistroRejeitado = 1;
+   ENDIF;
+ENDIF;
+
+
+# =================================================================================
+# Marca o registro para rejeitar (Mês)
+# =================================================================================
+sDim = 'ALL.D.Mes';
+sElm = vMes;
+sCol = 'Mes';
+
+IF( cExisteRegistroRejeitado = 0 );
+   IF( sElm @= '' );
+      cMensagemRegistro = 'A coluna    [ ' | sCol | ' ]    está em branco e é obrigatório ter algum valor';
+      cExisteRegistroRejeitado = 1;
+   ELSEIF( DimIx( sDim , sElm ) = 0 );
+      cMensagemRegistro = 'A coluna    [ ' | sCol | ' ]    contém o valor:    [ ' | sElm | ' ]    que não existe na dimensão:    [ ' | sDim | ' ]';
+      cExisteRegistroRejeitado = 1;
+   ELSEIF( DType( sDim , sElm ) @= 'C' );
+      cMensagemRegistro = 'A coluna    [ ' | sCol | ' ]    contém o valor:    [ ' | sElm | ' ]    que é um totalizador na dimensão:    [ ' | sDim | ' ]    totalizadores não podem receber carga';
+      cExisteRegistroRejeitado = 1;
+   ENDIF;
+ENDIF;
+
+
+# =================================================================================
+# Marca o registro para rejeitar (Centro de Custo)
+# =================================================================================
+sDim = 'ALL.D.Centro_Custo';
+sElm = vCentroCusto;
+sCol = 'Centro de Custo';
+
+IF( cExisteRegistroRejeitado = 0 );
+   IF( sElm @= '' );
+      cMensagemRegistro = 'A coluna    [ ' | sCol | ' ]    está em branco e é obrigatório ter algum valor';
+      cExisteRegistroRejeitado = 1;
+   ELSEIF( DimIx( sDim , sElm ) = 0 );
+      cMensagemRegistro = 'A coluna    [ ' | sCol | ' ]    contém o valor:    [ ' | sElm | ' ]    que não existe na dimensão:    [ ' | sDim | ' ]';
+      cExisteRegistroRejeitado = 1;
+   ELSEIF( DType( sDim , sElm ) @= 'C' );
+      cMensagemRegistro = 'A coluna    [ ' | sCol | ' ]    contém o valor:    [ ' | sElm | ' ]    que é um totalizador na dimensão:    [ ' | sDim | ' ]    totalizadores não podem receber carga';
+      cExisteRegistroRejeitado = 1;
+   ENDIF;
+ENDIF;
+
+
+# =================================================================================
+# Marca o registro para rejeitar (Cargo)
+# =================================================================================
+sDim = 'ALL.D.Cargos';
+sElm = vCargo;
+sCol = 'Cargo';
+
+IF( cExisteRegistroRejeitado = 0 );
+   IF( sElm @= '' );
+      cMensagemRegistro = 'A coluna    [ ' | sCol | ' ]    está em branco e é obrigatório ter algum valor';
+      cExisteRegistroRejeitado = 1;
+   ELSEIF( DimIx( sDim , sElm ) = 0 );
+      cMensagemRegistro = 'A coluna    [ ' | sCol | ' ]    contém o valor:    [ ' | sElm | ' ]    que não existe na dimensão:    [ ' | sDim | ' ]';
+      cExisteRegistroRejeitado = 1;
+   ELSEIF( DType( sDim , sElm ) @= 'C' );
+      cMensagemRegistro = 'A coluna    [ ' | sCol | ' ]    contém o valor:    [ ' | sElm | ' ]    que é um totalizador na dimensão:    [ ' | sDim | ' ]    totalizadores não podem receber carga';
+      cExisteRegistroRejeitado = 1;
+   ENDIF;
+ENDIF;
+
+
+# =================================================================================
+# Marca o registro para rejeitar
+# Caso Ano/Mês do registro sejam diferentes dos parâmetros informados
+# =================================================================================
+IF( cExisteRegistroRejeitado = 0 & vAno @<> pAno );
+   cMensagemRegistro = 'A coluna    [ Ano ]    contém o valor:    [ ' | vAno | ' ]    diferente do parâmetro informado:    [ ' | pAno | ' ]';
+   cExisteRegistroRejeitado = 1;
+ENDIF;
+
+IF( cExisteRegistroRejeitado = 0 & vMes @<> pMes );
+   cMensagemRegistro = 'A coluna    [ Mes ]    contém o valor:    [ ' | vMes | ' ]    diferente do parâmetro informado:    [ ' | pMes | ' ]';
+   cExisteRegistroRejeitado = 1;
+ENDIF;
+
+
+# =================================================================================
+# Marca o registro para rejeitar
+# Caso alguma coluna de valor contenha caractere de texto (não numérico)
+# Percorre as 10 colunas de valor reaproveitando a mesma varredura de caracteres
+# ASCII aceitos: 48-57 (0-9), 44 (,), 46 (.), 45 (-)
+# =================================================================================
+nColValor = 1;
+WHILE( nColValor <= 10 & cExisteRegistroRejeitado = 0 );
+
+   IF( nColValor = 1 );  sElm = vHeadCount;      sCol = 'HeadCount';
+   ELSEIF( nColValor = 2 );  sElm = vMassaSalarial;  sCol = 'Massa Salarial';
+   ELSEIF( nColValor = 3 );  sElm = vPlanoSaude;     sCol = 'Plano de Saúde';
+   ELSEIF( nColValor = 4 );  sElm = vValeRefeicao;   sCol = 'Vale Refeição';
+   ELSEIF( nColValor = 5 );  sElm = vINSS;           sCol = 'INSS';
+   ELSEIF( nColValor = 6 );  sElm = vFGTS;           sCol = 'FGTS';
+   ELSEIF( nColValor = 7 );  sElm = vProvisao13;     sCol = 'Provisão 13º';
+   ELSEIF( nColValor = 8 );  sElm = vSaldo13;        sCol = 'Saldo 13º a Pagar';
+   ELSEIF( nColValor = 9 );  sElm = vProvisaoFerias; sCol = 'Provisão Férias';
+   ELSEIF( nColValor = 10 ); sElm = vSaldoFerias;    sCol = 'Saldo Férias a Pagar';
+   ENDIF;
+
+   nMaxChar = LONG( sElm );
+   nIxChar  = 1;
+   nFalha   = 0;
+   WHILE( nIxChar <= nMaxChar & nFalha = 0 );
+      nTestASCII = Code( sElm , nIxChar );
+      IF( ~( nTestASCII >= 48 & nTestASCII <= 57 ) & nTestASCII <> 44 & nTestASCII <> 46 & nTestASCII <> 45 );
+         cExisteRegistroRejeitado = 1;
+         cMensagemRegistro = 'A coluna    [ ' | sCol | ' ]    contém o caractere de texto:    [ ' | Subst( sElm, nIxChar, 1 ) | ' ]    esta coluna deve conter apenas valores numéricos';
+         nFalha = 1;
+      ENDIF;
+      nIxChar = nIxChar + 1;
+   END;
+
+   nColValor = nColValor + 1;
+END;
+
+
+# =================================================================================
+# Marca o registro para rejeitar
+# Caso a célula do cubo de destino não possa ser atualizada
+# =================================================================================
+IF( cExisteRegistroRejeitado = 0 );
+   nCellIsUpdateable = CellIsUpdateable( cCuboDestino, vAno, vMes, pVersao, cExistenteNovo, vCentroCusto, vCargo, 'Saldo Final HC' );
+   IF( nCellIsUpdateable = 0 );
+      cExisteRegistroRejeitado = 1;
+      cMensagemRegistro = 'A célula do cubo não pode receber carga neste cruzamento (possivelmente calculada ou sem permissão de escrita)';
+   ENDIF;
+ENDIF;
+
+
+# =================================================================================
+# DEBUG ou REJEIÇÃO
+# Registra no cubo SYS.160 os registros rejeitados e pula o registro
+# =================================================================================
+IF( cExisteRegistroRejeitado = 1 % cUtilizarDebug @= 'S' );
+
+   # Escreve o cabeçalho do cubo de rejeitados (uma única vez)
+   # =================================================================================
+   IF( cExisteCabecalhoRejeitado = 0 );
+      AttrPutS( 'Num. Registro',   'SYS.M.160.Rejeitados_Cargas', 'Linha de Registro', cProcesso );
+      AttrPutS( 'Mensagem de Erro', 'SYS.M.160.Rejeitados_Cargas', 'Mensagem', cProcesso );
+      AttrPutS( 'Ano',             'SYS.M.160.Rejeitados_Cargas', 'COL1', cProcesso );
+      AttrPutS( 'Mes',             'SYS.M.160.Rejeitados_Cargas', 'COL2', cProcesso );
+      AttrPutS( 'Centro de Custo', 'SYS.M.160.Rejeitados_Cargas', 'COL3', cProcesso );
+      AttrPutS( 'Cargo',           'SYS.M.160.Rejeitados_Cargas', 'COL4', cProcesso );
+
+      cExisteCabecalhoRejeitado = 1;
+      cTipoErro = 2;
+
+      IF( cUtilizarDebug @= 'S' );
+         cMensagemProcesso = ' Processo concluído com registros salvos no cubo de Debug, verificar o cubo:    ' | cCuboRejeitado;
+      ENDIF;
+   ENDIF;
+
+   # Escreve o registro no cubo de rejeitados (protegido pela existência da linha em SYS.D.Linha)
+   # =================================================================================
+   cContadorRejeitados = cContadorRejeitados + 1;
+   sLinha = 'L' | NumberToString( cContadorRejeitados );
+
+   IF( DimIx( 'SYS.D.Linha', sLinha ) <> 0 );
+      CellPutS( sContadorRegistro, cCuboRejeitado, cProcesso, cUsuario, sLinha, 'Linha de Registro' );
+      CellPutS( cMensagemRegistro, cCuboRejeitado, cProcesso, cUsuario, sLinha, 'Mensagem' );
+      CellPutS( vAno,              cCuboRejeitado, cProcesso, cUsuario, sLinha, 'COL1' );
+      CellPutS( vMes,              cCuboRejeitado, cProcesso, cUsuario, sLinha, 'COL2' );
+      CellPutS( vCentroCusto,      cCuboRejeitado, cProcesso, cUsuario, sLinha, 'COL3' );
+      CellPutS( vCargo,            cCuboRejeitado, cProcesso, cUsuario, sLinha, 'COL4' );
+   ENDIF;
+
+   # Limpa as variáveis e pula o registro rejeitado
+   # =================================================================================
+   IF( cExisteRegistroRejeitado = 1 );
+      cExisteRegistroRejeitado = 0;
+      cMensagemRegistro = '';
+      cTipoErro = 2;
+      cMensagemProcesso = ' Processo concluído com registros rejeitados, verificar o cubo:    ' | cCuboRejeitado;
+      ItemSkip;
+   ENDIF;
+
+ENDIF;
+
+
+# =================================================================================
+# Converte as colunas de valor para número
+# =================================================================================
+n01 = StringToNumberEx( vHeadCount,      cSeparadorDecimal, cSeparadorMilhar );
+n02 = StringToNumberEx( vMassaSalarial,  cSeparadorDecimal, cSeparadorMilhar );
+n03 = StringToNumberEx( vPlanoSaude,     cSeparadorDecimal, cSeparadorMilhar );
+n04 = StringToNumberEx( vValeRefeicao,   cSeparadorDecimal, cSeparadorMilhar );
+n05 = StringToNumberEx( vINSS,           cSeparadorDecimal, cSeparadorMilhar );
+n06 = StringToNumberEx( vFGTS,           cSeparadorDecimal, cSeparadorMilhar );
+n07 = StringToNumberEx( vProvisao13,     cSeparadorDecimal, cSeparadorMilhar );
+n08 = StringToNumberEx( vSaldo13,        cSeparadorDecimal, cSeparadorMilhar );
+n09 = StringToNumberEx( vProvisaoFerias, cSeparadorDecimal, cSeparadorMilhar );
+n10 = StringToNumberEx( vSaldoFerias,    cSeparadorDecimal, cSeparadorMilhar );
+
+
+# =================================================================================
+# Grava as medidas do realizado no cubo (versão RE, Existente_Novo = 'Existentes')
+# =================================================================================
+CellPutN( n01, cCuboDestino, vAno, vMes, pVersao, cExistenteNovo, vCentroCusto, vCargo, 'Saldo Final HC' );
+CellPutN( n02, cCuboDestino, vAno, vMes, pVersao, cExistenteNovo, vCentroCusto, vCargo, '$ Salário' );
+CellPutN( n03, cCuboDestino, vAno, vMes, pVersao, cExistenteNovo, vCentroCusto, vCargo, '$ Plano de Saúde' );
+CellPutN( n04, cCuboDestino, vAno, vMes, pVersao, cExistenteNovo, vCentroCusto, vCargo, '$ Vale Refeição' );
+CellPutN( n05, cCuboDestino, vAno, vMes, pVersao, cExistenteNovo, vCentroCusto, vCargo, '$ INSS' );
+CellPutN( n06, cCuboDestino, vAno, vMes, pVersao, cExistenteNovo, vCentroCusto, vCargo, '$ FGTS' );
+CellPutN( n07, cCuboDestino, vAno, vMes, pVersao, cExistenteNovo, vCentroCusto, vCargo, '$ Provisão 13º Salário' );
+CellPutN( n08, cCuboDestino, vAno, vMes, pVersao, cExistenteNovo, vCentroCusto, vCargo, '$ Saldo 13º Salário a Pagar' );
+CellPutN( n09, cCuboDestino, vAno, vMes, pVersao, cExistenteNovo, vCentroCusto, vCargo, '$ Provisão Férias' );
+CellPutN( n10, cCuboDestino, vAno, vMes, pVersao, cExistenteNovo, vCentroCusto, vCargo, '$ Saldo Férias a Pagar' );
+#endregion
+#region Epilog
+# ===============================================================================================================
+#EPILOGCOMMENT              Descrição:        Reabilita o log do cubo, salva os dados e registra o log de status
+# ===============================================================================================================
+
+# =================================================================================
+# Reabilita o log e salva os dados no cubo
+# =================================================================================
+CellPutS( 'YES', cCuboPropriedade, cCuboDestino, 'LOGGING' );
+CubeSaveData( cCuboDestino );
+
+
+# =================================================================================
+# Define a mensagem final de acordo com o tipo de erro
+# =================================================================================
+IF( cTipoErro = 0 );
+   cMensagemProcesso = ' Processo concluído com sucesso';
+ELSEIF( cTipoErro = 2 );
+   cMensagemProcesso = ' Processo concluído com registros rejeitados (' | NumberToString( cContadorRejeitados ) | '), verificar o cubo:    ' | cCuboRejeitado;
+ENDIF;
+
+
+# =================================================================================
+# Registra o log de status no cubo de controle (SYS.150)
+# =================================================================================
+CellPutS( TimSt( cHorarioInicio , '\Y-\m-\d \hh\im\ss' ) , cCuboParametro, cProcesso, 'DataHora Fim' );
+CellPutS( cUsuario , cCuboParametro, cProcesso, 'Usuário' );
+CellPutS( cMensagemProcesso , cCuboParametro, cProcesso, 'Mensagem de Log' );
+CellPutS( sContadorRegistro , cCuboParametro, cProcesso, 'Registros Processados' );
+CellPutS( TimSt( Now - cHorarioInicio, ' \h:\i:\s' ) , cCuboParametro, cProcesso, 'Tempo de Execução' );
+#endregion

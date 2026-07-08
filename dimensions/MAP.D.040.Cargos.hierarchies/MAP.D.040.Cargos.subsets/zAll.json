@@ -1,0 +1,5 @@
+{
+	"@type":"Subset",
+	"Name":"zAll",
+	"Expression":"{TM1SUBSETALL( [MAP.D.040.Cargos] )}"
+}

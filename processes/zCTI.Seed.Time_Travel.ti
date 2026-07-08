@@ -1,0 +1,25 @@
+#region Prolog
+# ===============================================================================================================
+#Name  zCTI.Seed.Time_Travel
+#Desc  Carrega SYS.200.Time_Travel a partir do CSV em model_upload. Tabela estatica de time-travel: dado (Ano, Mes) base e um deslocamento Parametro_Mes, devolve o Ano/Mes resultante.
+#Date  08/07/2026
+#Author CTI
+# ===============================================================================================================
+cCubo = 'SYS.200.Time_Travel';
+CubeClearData( cCubo );
+#endregion
+#region Data
+vAnoBase = Trim( vAnoBase );
+vMesBase = Trim( vMesBase );
+vParam   = Trim( vParam );
+vAnoRes  = Trim( vAnoRes );
+vMesRes  = Trim( vMesRes );
+IF( vAnoBase @= '' % vMesBase @= '' % vParam @= '' );
+   ItemSkip;
+ENDIF;
+CellPutS( vAnoRes, cCubo, vAnoBase, vMesBase, vParam, 'Ano' );
+CellPutS( vMesRes, cCubo, vAnoBase, vMesBase, vParam, 'Mes' );
+#endregion
+#region Epilog
+CubeSaveData( cCubo );
+#endregion

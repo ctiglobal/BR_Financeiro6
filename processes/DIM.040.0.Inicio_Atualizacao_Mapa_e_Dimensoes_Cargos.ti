@@ -1,0 +1,9 @@
+#region Prolog
+# ===============================================================================================================
+#GENERALCOMMENT  Orquestrador do modulo Cargos. Dispara DIM.040.1 (CSV -> cubo mapa), que encadeia DIM.040.2
+#GENERALCOMMENT  (cubo mapa -> dimensao ALL.D.Cargos) no Epilog. NAO usar ProcessError: o DIM.040.1 sinaliza
+#GENERALCOMMENT  ItemReject quando ha linhas rejeitadas (comportamento normal) e um ProcessError aqui faria
+#GENERALCOMMENT  rollback das atualizacoes de dimensao/atributos do DIM.040.2. Rejeicoes ficam em SYS.160.
+# ===============================================================================================================
+nRet = ExecuteProcess( 'DIM.040.1.CSV_para_cubo_MAP.040.Cargos', 'pFile', pFile );
+#endregion

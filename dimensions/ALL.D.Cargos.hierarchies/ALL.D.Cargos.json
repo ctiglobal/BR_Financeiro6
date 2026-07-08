@@ -1,0 +1,53 @@
+{
+	"@type":"Hierarchy",
+	"Name":"ALL.D.Cargos",
+	"Elements":
+	[
+		{ "Name":"FIN-20", "Type":"Numeric" },
+		{ "Name":"PRD-200", "Type":"Numeric" },
+		{ "Name":"PRD-999", "Type":"Numeric" },
+		{ "Name":"PUB-01", "Type":"Numeric" },
+		{ "Name":"RHU-001", "Type":"Numeric" },
+		{ "Name":"Total Cargos", "Type":"Consolidated" },
+		{ "Name":"ADM-001", "Type":"Numeric" },
+		{ "Name":"ADM-010", "Type":"Numeric" },
+		{ "Name":"ADM-100", "Type":"Numeric" },
+		{ "Name":"COM-001", "Type":"Numeric" },
+		{ "Name":"COM-100", "Type":"Numeric" },
+		{ "Name":"FIN-001", "Type":"Numeric" },
+		{ "Name":"FIN-020", "Type":"Numeric" },
+		{ "Name":"FIN-100", "Type":"Numeric" },
+		{ "Name":"FIN-999", "Type":"Numeric" },
+		{ "Name":"MER-001", "Type":"Numeric" },
+		{ "Name":"PRD-001", "Type":"Numeric" },
+		{ "Name":"PRD-002", "Type":"Numeric" },
+		{ "Name":"PRD-003", "Type":"Numeric" },
+		{ "Name":"PRD-004", "Type":"Numeric" },
+		{ "Name":"PRD-100", "Type":"Numeric" },
+		{ "Name":"PRD-300", "Type":"Numeric" },
+		{ "Name":"PUB-001", "Type":"Numeric" },
+		{ "Name":"RHU-100", "Type":"Numeric" }
+	],
+	"Edges":
+	[
+		{ "ParentName":"Total Cargos", "ComponentName":"ADM-001", "Weight":1 },
+		{ "ParentName":"Total Cargos", "ComponentName":"ADM-010", "Weight":1 },
+		{ "ParentName":"Total Cargos", "ComponentName":"ADM-100", "Weight":1 },
+		{ "ParentName":"Total Cargos", "ComponentName":"COM-001", "Weight":1 },
+		{ "ParentName":"Total Cargos", "ComponentName":"COM-100", "Weight":1 },
+		{ "ParentName":"Total Cargos", "ComponentName":"FIN-001", "Weight":1 },
+		{ "ParentName":"Total Cargos", "ComponentName":"FIN-020", "Weight":1 },
+		{ "ParentName":"Total Cargos", "ComponentName":"FIN-100", "Weight":1 },
+		{ "ParentName":"Total Cargos", "ComponentName":"FIN-999", "Weight":1 },
+		{ "ParentName":"Total Cargos", "ComponentName":"MER-001", "Weight":1 },
+		{ "ParentName":"Total Cargos", "ComponentName":"PRD-001", "Weight":1 },
+		{ "ParentName":"Total Cargos", "ComponentName":"PRD-002", "Weight":1 },
+		{ "ParentName":"Total Cargos", "ComponentName":"PRD-003", "Weight":1 },
+		{ "ParentName":"Total Cargos", "ComponentName":"PRD-004", "Weight":1 },
+		{ "ParentName":"Total Cargos", "ComponentName":"PRD-100", "Weight":1 },
+		{ "ParentName":"Total Cargos", "ComponentName":"PRD-300", "Weight":1 },
+		{ "ParentName":"Total Cargos", "ComponentName":"PUB-001", "Weight":1 },
+		{ "ParentName":"Total Cargos", "ComponentName":"RHU-100", "Weight":1 }
+	],
+	"Subsets@Code.links":[]
+}

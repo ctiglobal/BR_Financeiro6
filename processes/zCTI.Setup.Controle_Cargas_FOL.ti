@@ -1,0 +1,12 @@
+#region Prolog
+# ===============================================================================================================
+#GENERALCOMMENT  Setup: semeia no SYS.150.Controle_Cargas os parâmetros de carga do módulo Folha (DIM.040.1 e RH.020.0).
+# ===============================================================================================================
+cCubo = 'SYS.150.Controle_Cargas';
+cCaminho = 'model_upload\';
+CellPutS( cCaminho, cCubo, 'DIM.040.1.CSV_para_cubo_MAP.040.Cargos', 'Caminho do Arquivo Fonte' );
+CellPutS( 'N', cCubo, 'DIM.040.1.CSV_para_cubo_MAP.040.Cargos', 'Debug (S/N)' );
+CellPutS( 'N', cCubo, 'DIM.040.1.CSV_para_cubo_MAP.040.Cargos', 'Gerar Log de Alteração (S/N)' );
+CellPutS( cCaminho, cCubo, 'RH.020.0.CSV_para_cubo_FOL.100.Folha_Pagamento - Carga Realizado', 'Caminho do Arquivo Fonte' );
+CellPutS( 'N', cCubo, 'RH.020.0.CSV_para_cubo_FOL.100.Folha_Pagamento - Carga Realizado', 'Debug (S/N)' );
+#endregion

@@ -1,0 +1,29 @@
+{
+	"@type":"Hierarchy",
+	"Name":"MAP.D.040.Cargos",
+	"Elements":
+	[
+		{ "Name":"ADM-001", "Type":"Numeric" },
+		{ "Name":"ADM-010", "Type":"Numeric" },
+		{ "Name":"ADM-100", "Type":"Numeric" },
+		{ "Name":"COM-001", "Type":"Numeric" },
+		{ "Name":"COM-100", "Type":"Numeric" },
+		{ "Name":"FIN-001", "Type":"Numeric" },
+		{ "Name":"FIN-020", "Type":"Numeric" },
+		{ "Name":"FIN-100", "Type":"Numeric" },
+		{ "Name":"FIN-999", "Type":"Numeric" },
+		{ "Name":"MER-001", "Type":"Numeric" },
+		{ "Name":"PRD-001", "Type":"Numeric" },
+		{ "Name":"PRD-002", "Type":"Numeric" },
+		{ "Name":"PRD-003", "Type":"Numeric" },
+		{ "Name":"PRD-004", "Type":"Numeric" },
+		{ "Name":"PRD-100", "Type":"Numeric" },
+		{ "Name":"PRD-300", "Type":"Numeric" },
+		{ "Name":"PUB-001", "Type":"Numeric" },
+		{ "Name":"RHU-100", "Type":"Numeric" }
+	],
+	"Subsets@Code.links":
+	[
+		"MAP.D.040.Cargos.subsets/zAll.json"
+	]
+}

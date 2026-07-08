@@ -1,0 +1,12 @@
+{
+	"@type":"Dimension",
+	"Name":"MAP.M.040.Cargos",
+	"Hierarchies@Code.links":
+	[
+		"MAP.M.040.Cargos.hierarchies/MAP.M.040.Cargos.json"
+	],
+	"DefaultHierarchy":
+	{
+		"@id":"Dimensions('MAP.M.040.Cargos')/Hierarchies('MAP.M.040.Cargos')"
+	}
+}

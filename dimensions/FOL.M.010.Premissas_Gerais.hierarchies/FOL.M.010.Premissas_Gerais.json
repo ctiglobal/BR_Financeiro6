@@ -1,0 +1,28 @@
+{
+	"@type":"Hierarchy",
+	"Name":"FOL.M.010.Premissas_Gerais",
+	"Elements":
+	[
+		{
+			"Name":"% Dissídio",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"% Reajuste Plano de Saúde",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"% Reajuste Vale Refeição",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"% INSS",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"% FGTS",
+			"Type":"Numeric"
+		}
+	],
+	"Subsets@Code.links":[]
+}

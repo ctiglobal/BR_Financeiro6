@@ -1,0 +1,30 @@
+{
+	"@type":"Cube",
+	"Name":"FOL.100.Folha_Pagamento",
+	"Dimensions":
+	[
+		{
+			"@id":"Dimensions('ALL.D.Ano')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.Mes')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.Versao')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.Existente_Novo')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.Centro_Custo')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.Cargos')"
+		},
+		{
+			"@id":"Dimensions('FOL.M.100.Folha_Pagamento')"
+		}
+	],
+	"Rules@Code.link":"FOL.100.Folha_Pagamento.rules",
+	"Views@Code.links":[]
+}

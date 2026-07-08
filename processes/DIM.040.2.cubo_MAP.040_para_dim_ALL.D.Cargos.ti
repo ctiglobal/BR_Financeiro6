@@ -1,0 +1,86 @@
+#region Prolog
+# ===============================================================================================================
+#GENERALCOMMENT  Atualiza a dimensao ALL.D.Cargos a partir do cubo mapa MAP.040.Cargos.
+#GENERALCOMMENT  Padrao zCTI.Template.Carga.Cubo.Mapa.Para.Dimensao.Balanceada: limpa consolidados,
+#GENERALCOMMENT  insere totalizador, ordena; grava alias 'Codigo e Descricao' e atributos numericos
+#GENERALCOMMENT  ($ Salario Base / $ Plano de Saude / $ Vale Refeicao) usados pela regra de projecao (ATTRN).
+# ===============================================================================================================
+cDimensao = 'ALL.D.Cargos';
+cCuboMapa = 'MAP.040.Cargos';
+cTotalizador = 'Total Cargos';
+cUsuario = IF( DimIx( '}Clients' , TM1User() ) = 0, 'Executed by Chore' , TM1User() );
+cCuboParametro = 'SYS.150.Controle_Cargas';
+cHorarioInicio = Now();
+cProcesso = GetProcessName();
+cMensagemProcesso = '';
+cContadorRegistro = 0;
+sContadorRegistro = '0';
+
+# --- Log inicial como falha ---
+CellPutS( TimSt( cHorarioInicio , '\Y-\m-\d \hh\im\ss' ), cCuboParametro, cProcesso, 'DataHora Inicio' );
+CellPutS( TimSt( cHorarioInicio , '\Y-\m-\d \hh\im\ss' ), cCuboParametro, cProcesso, 'DataHora Fim' );
+CellPutS( cUsuario, cCuboParametro, cProcesso, 'Usuário' );
+CellPutS( 'Processo com falha, contate o administrador para verificar os logs de erro', cCuboParametro, cProcesso, 'Mensagem de Log' );
+CellPutS( '0', cCuboParametro, cProcesso, 'Registros Processados' );
+
+# --- Garante atributos (alias + numericos usados pela regra) ---
+AttrInsert( cDimensao, '', 'Código e Descrição', 'A' );
+AttrInsert( cDimensao, '', '$ Salário Base', 'N' );
+AttrInsert( cDimensao, '', '$ Plano de Saúde', 'N' );
+AttrInsert( cDimensao, '', '$ Vale Refeição', 'N' );
+
+# --- Limpa todos os consolidados da dimensao (mantem as folhas) ---
+vCount = DimSiz( cDimensao );
+WHILE( vCount <> 0 );
+   vElementoN = DimNm( cDimensao, vCount );
+   IF( DTYPE( cDimensao, vElementoN ) @= 'C' );
+      DimensionElementDelete( cDimensao, vElementoN );
+   ENDIF;
+   vCount = vCount - 1;
+END;
+
+# --- Insere totalizador e ordena ---
+DimensionElementInsert( cDimensao, '', cTotalizador, 'C' );
+DimensionSortOrder( cDimensao, 'ByName', 'Ascending', 'ByHierarchy', 'Ascending' );
+
+# --- Subset de leitura (todas as folhas do mapa) usado como origem de dados ---
+IF( SubsetExists( 'MAP.D.040.Cargos', 'DIM.040.2.Load' ) = 1 );
+   SubsetDestroy( 'MAP.D.040.Cargos', 'DIM.040.2.Load' );
+ENDIF;
+SubsetCreateByMDX( 'DIM.040.2.Load', '{ TM1FILTERBYLEVEL( {TM1SUBSETALL( [MAP.D.040.Cargos] )}, 0 ) }' );
+#endregion
+#region Metadata
+sElm = Trim( vElement );
+IF( sElm @<> '' );
+   DimensionElementComponentAdd( cDimensao, cTotalizador, sElm, 1 );
+ENDIF;
+#endregion
+#region Data
+cContadorRegistro = cContadorRegistro + 1;
+sContadorRegistro = NumberToString( cContadorRegistro );
+sElm = Trim( vElement );
+IF( sElm @= '' );
+   ItemSkip;
+ENDIF;
+sDesc = CellGetS( cCuboMapa, sElm, 'Descrição' );
+nSal = CellGetN( cCuboMapa, sElm, '$ Salário Base' );
+nPln = CellGetN( cCuboMapa, sElm, '$ Plano de Saúde' );
+nVal = CellGetN( cCuboMapa, sElm, '$ Vale Refeição' );
+IF( sDesc @<> '' );
+   AttrPutS( sElm | ' - ' | sDesc, cDimensao, sElm, 'Código e Descrição' );
+ENDIF;
+AttrPutN( nSal, cDimensao, sElm, '$ Salário Base' );
+AttrPutN( nPln, cDimensao, sElm, '$ Plano de Saúde' );
+AttrPutN( nVal, cDimensao, sElm, '$ Vale Refeição' );
+#endregion
+#region Epilog
+cMensagemProcesso = 'Processo concluído com sucesso';
+CellPutS( TimSt( cHorarioInicio , '\Y-\m-\d \hh\im\ss' ) , cCuboParametro, cProcesso, 'DataHora Fim' );
+CellPutS( cUsuario , cCuboParametro, cProcesso, 'Usuário' );
+CellPutS( cMensagemProcesso , cCuboParametro, cProcesso, 'Mensagem de Log' );
+CellPutS( sContadorRegistro , cCuboParametro, cProcesso, 'Registros Processados' );
+CellPutS( TimSt( Now - cHorarioInicio, ' \h:\i:\s') , cCuboParametro, cProcesso, 'Tempo de Execução' );
+IF( SubsetExists( 'MAP.D.040.Cargos', 'DIM.040.2.Load' ) = 1 );
+   SubsetDestroy( 'MAP.D.040.Cargos', 'DIM.040.2.Load' );
+ENDIF;
+#endregion

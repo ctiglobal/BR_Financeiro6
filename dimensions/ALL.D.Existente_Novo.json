@@ -1,0 +1,12 @@
+{
+	"@type":"Dimension",
+	"Name":"ALL.D.Existente_Novo",
+	"Hierarchies@Code.links":
+	[
+		"ALL.D.Existente_Novo.hierarchies/ALL.D.Existente_Novo.json"
+	],
+	"DefaultHierarchy":
+	{
+		"@id":"Dimensions('ALL.D.Existente_Novo')/Hierarchies('ALL.D.Existente_Novo')"
+	}
+}

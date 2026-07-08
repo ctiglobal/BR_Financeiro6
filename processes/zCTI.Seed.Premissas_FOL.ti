@@ -1,0 +1,23 @@
+#region Prolog
+# ===============================================================================================================
+#GENERALCOMMENT  Seed: premissas iniciais de Folha em FOL.010.Premissas_Gerais (versoes T1/T2, anos 2026-2028).
+#GENERALCOMMENT  % INSS=0.20 e % FGTS=0.08 (fundamentados no realizado). Dissidio/Reajuste ficam 0 (input do usuario).
+#GENERALCOMMENT  Padrao de seed (igual zCTI.Seed.Premissas): sem datasource, WHILE + CellPutN, CubeSaveData ao fim.
+# ===============================================================================================================
+cCubo = 'FOL.010.Premissas_Gerais';
+nAno = 2026;
+WHILE( nAno <= 2028 );
+   sAno = NumberToString( nAno );
+   nMes = 1;
+   WHILE( nMes <= 12 );
+      sMes = IF( nMes < 10, '0' | NumberToString( nMes ), NumberToString( nMes ) );
+      CellPutN( 0.20, cCubo, sAno, sMes, 'T1', '% INSS' );
+      CellPutN( 0.08, cCubo, sAno, sMes, 'T1', '% FGTS' );
+      CellPutN( 0.20, cCubo, sAno, sMes, 'T2', '% INSS' );
+      CellPutN( 0.08, cCubo, sAno, sMes, 'T2', '% FGTS' );
+      nMes = nMes + 1;
+   END;
+   nAno = nAno + 1;
+END;
+CubeSaveData( cCubo );
+#endregion

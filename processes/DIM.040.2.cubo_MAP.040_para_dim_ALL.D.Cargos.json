@@ -1,0 +1,24 @@
+{
+	"@type":"Process",
+	"Name":"DIM.040.2.cubo_MAP.040_para_dim_ALL.D.Cargos",
+	"HasSecurityAccess":false,
+	"Code@Code.link":"DIM.040.2.cubo_MAP.040_para_dim_ALL.D.Cargos.ti",
+	"DataSource":
+	{
+		"Type":"TM1DimensionSubset",
+		"dataSourceNameForClient":"MAP.D.040.Cargos",
+		"dataSourceNameForServer":"MAP.D.040.Cargos",
+		"subset":"DIM.040.2.Load"
+	},
+	"Parameters":[],
+	"Variables":
+	[
+		{
+			"Name":"vElement",
+			"Type":"String",
+			"Position":1,
+			"StartByte":0,
+			"EndByte":0
+		}
+	]
+}

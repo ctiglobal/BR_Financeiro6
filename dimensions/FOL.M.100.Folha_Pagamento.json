@@ -1,0 +1,12 @@
+{
+	"@type":"Dimension",
+	"Name":"FOL.M.100.Folha_Pagamento",
+	"Hierarchies@Code.links":
+	[
+		"FOL.M.100.Folha_Pagamento.hierarchies/FOL.M.100.Folha_Pagamento.json"
+	],
+	"DefaultHierarchy":
+	{
+		"@id":"Dimensions('FOL.M.100.Folha_Pagamento')/Hierarchies('FOL.M.100.Folha_Pagamento')"
+	}
+}

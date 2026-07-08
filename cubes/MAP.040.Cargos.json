@@ -1,0 +1,14 @@
+{
+	"@type":"Cube",
+	"Name":"MAP.040.Cargos",
+	"Dimensions":
+	[
+		{
+			"@id":"Dimensions('MAP.D.040.Cargos')"
+		},
+		{
+			"@id":"Dimensions('MAP.M.040.Cargos')"
+		}
+	],
+	"Views@Code.links":[]
+}

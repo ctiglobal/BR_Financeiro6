@@ -1,0 +1,12 @@
+{
+	"@type":"Process",
+	"Name":"zCTI.Setup.Controle_Cargas_FOL",
+	"HasSecurityAccess":false,
+	"Code@Code.link":"zCTI.Setup.Controle_Cargas_FOL.ti",
+	"DataSource":
+	{
+		"Type":"None"
+	},
+	"Parameters":[],
+	"Variables":[]
+}

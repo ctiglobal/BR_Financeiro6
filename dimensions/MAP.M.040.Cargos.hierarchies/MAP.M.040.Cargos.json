@@ -1,0 +1,24 @@
+{
+	"@type":"Hierarchy",
+	"Name":"MAP.M.040.Cargos",
+	"Elements":
+	[
+		{
+			"Name":"Descrição",
+			"Type":"String"
+		},
+		{
+			"Name":"$ Salário Base",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"$ Plano de Saúde",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"$ Vale Refeição",
+			"Type":"Numeric"
+		}
+	],
+	"Subsets@Code.links":[]
+}

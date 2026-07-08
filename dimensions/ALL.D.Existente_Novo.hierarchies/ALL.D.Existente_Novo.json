@@ -1,0 +1,33 @@
+{
+	"@type":"Hierarchy",
+	"Name":"ALL.D.Existente_Novo",
+	"Elements":
+	[
+		{
+			"Name":"Existentes",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"Novos",
+			"Type":"Numeric"
+		},
+		{
+			"Name":"Total Existente e Novo",
+			"Type":"Consolidated"
+		}
+	],
+	"Edges":
+	[
+		{
+			"ParentName":"Total Existente e Novo",
+			"ComponentName":"Existentes",
+			"Weight":1
+		},
+		{
+			"ParentName":"Total Existente e Novo",
+			"ComponentName":"Novos",
+			"Weight":1
+		}
+	],
+	"Subsets@Code.links":[]
+}

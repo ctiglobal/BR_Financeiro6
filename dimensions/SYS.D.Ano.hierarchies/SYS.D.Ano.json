@@ -1,0 +1,11 @@
+{
+	"@type":"Hierarchy",
+	"Name":"SYS.D.Ano",
+	"Elements":
+	[
+		{ "Name":"2025", "Type":"Numeric" },
+		{ "Name":"2026", "Type":"Numeric" },
+		{ "Name":"2027", "Type":"Numeric" }
+	],
+	"Subsets@Code.links":[]
+}
