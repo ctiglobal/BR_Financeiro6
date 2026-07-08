@@ -38,6 +38,8 @@ em `SYS.160.Rejeitados_Cargas`.
 - `zCTI.Seed.Premissas` — carga inicial de premissas de Receita.
 - `zCTI.Seed.Premissas_FOL` — carga inicial de premissas de Folha (`FOL.010`;
   `% INSS`/`% FGTS` default 20%/8%).
+- `zCTI.Seed.Time_Travel` — carga da tabela de lookup de deslocamento de período
+  (`SYS.200.Time_Travel`), a partir do CSV em `model_upload/`. Estática; re-executável.
 - `zCTI.Setup.*` — atributos (Produto, Centro de Custo), controle de cargas
   (inclui `zCTI.Setup.Controle_Cargas_FOL`), controle Real/Orçado.
 

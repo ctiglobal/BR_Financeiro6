@@ -16,6 +16,7 @@
 | `MAP.010.Produto`, `MAP.030.Centro_Custo`, `MAP.040.Cargos` | Staging de-para | `MAP.040`: `Descrição`, `$ Salário Base`, `$ Plano de Saúde`, `$ Vale Refeição` |
 | `SYS.150.Controle_Cargas` | Parâmetros de carga por processo | `Caminho do Arquivo Fonte`, `Debug (S/N)` |
 | `SYS.160.Rejeitados_Cargas` | Registros rejeitados nas cargas | — |
+| `SYS.200.Time_Travel` | Lookup de deslocamento de período (utilitário; ver abaixo) | `Ano`, `Mes` (string) |
 
 ## Dimensões (por prefixo)
 
@@ -25,8 +26,10 @@
   `MAP.D.040.Cargos`).
 - **`*.M.*`**: dimensões de medidas por cubo (`REC.M.100.Receita`,
   `CAP.M.200.Investimentos`, etc.).
+- **`SYS.D.*`**: dimensões de sistema/utilitário (`SYS.D.Linha`, e do Time Travel:
+  `SYS.D.Ano`, `SYS.D.Mes`, `SYS.D.Parametro_Mes`).
 - **`SYS.M.*`**: medidas de controle (`SYS.M.150.Controle_Cargas`,
-  `SYS.M.160.Rejeitados_Cargas`).
+  `SYS.M.160.Rejeitados_Cargas`, `SYS.M.200.Time_Travel`).
 
 ## Fluxo de cálculo da Receita (regras em `REC.100`)
 
@@ -60,5 +63,20 @@ carregado por `RH.020.0`) e **Projeção** (`T1`/`T2`, calculado). Dimensões:
     (Salário + Provisão 13º + Provisão Férias) × %` (premissa de `FOL.010`).
   - Roll de HC (`Saldo Final = Inicial + Contratações − Desligamentos`) e movimentação
     de Saldo a Pagar (`= saldo anterior + Provisão − Pagamento + Correção`).
+
+## Utilitário Time Travel (`SYS.200.Time_Travel`)
+
+Tabela de lookup **estática** para aritmética de período: dado um `(Ano, Mes)` base
+e um deslocamento `Parametro_Mes` (de −12 a +12), devolve o `Ano`/`Mes` resultante
+já tratando a virada de ano. Ambas as medidas são **string** (o `Mes` preserva o
+zero à esquerda `01`, e a saída serve de coordenada em `DB(...)`).
+
+- Dimensões: `SYS.D.Ano × SYS.D.Mes × SYS.D.Parametro_Mes × SYS.M.200.Time_Travel`.
+- **Não tem regras** — os valores vêm da carga (`zCTI.Seed.Time_Travel`, do CSV em
+  `model_upload/`). Re-executável (`CubeClearData` + recarga).
+- Uso típico em regras de outros cubos: em vez de calcular "mês anterior" com
+  `NUMBR`/`NUMBERTOSTRING`, ler o período deslocado —
+  ex.: `DB('SYS.200.Time_Travel', !ALL.D.Ano, !ALL.D.Mes, '-1', 'Mes')` devolve o mês
+  anterior, e `... , '-1', 'Ano')` o ano correspondente.
 
 > Ao adicionar cubos/dimensões, atualize esta tabela na mesma mudança.

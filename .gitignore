@@ -7,6 +7,9 @@ Thumbs.db
 Desktop.ini
 *.tmp
 *.log
+# docs
+*.pptx
+*.xlsx
 
 # TM1 / cargas locais (arquivos de dados não pertencem ao repo do modelo)
 data/
