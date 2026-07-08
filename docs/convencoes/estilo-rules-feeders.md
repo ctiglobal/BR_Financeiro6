@@ -2,9 +2,10 @@
 
 Baseado em `cubes/REC.100.Receita.rules`. Toda regra nova segue este padrão.
 
-## Cabeçalho de cada bloco
+## Cabeçalho de cada bloco (obrigatório, sem exceção)
 
-Todo cálculo é precedido de um comentário estruturado:
+**Toda** regra tem cabeçalho — cada bloco de cálculo **e** a seção `FEEDERS`. Regra
+sem cabeçalho é tratada como defeito. O comentário é estruturado:
 
 ```
 # --------------------------------------------------------------------------------------------
@@ -47,6 +48,28 @@ estáticas caem em `STET` e permanecem como **input puro**:
 - Assim as regras de medida só precisam do gate Real×Orçado (espelhar `RE` vs.
   calcular premissa), sem repetir a checagem de versão. **`RE` nunca calcula** —
   os derivados do realizado existem apenas em `T1`/`T2`.
+
+## Referência a período anterior/seguinte — use SYS.200.Time_Travel
+
+Contas de **saldo** e qualquer roll-forward (Saldo Inicial/Final HC, Saldos a Pagar,
+Valores Unitários que herdam do mês anterior) referenciam outro período **pelo cubo
+`SYS.200.Time_Travel`** — nunca por aritmética de string.
+
+- **Proibido em regra:** `NUMBERTOSTRING` / `STRINGTONUMBER` **não existem em regras**
+  (só em TI). Também não monte mês/ano com `NUMBR`/`STR`/`IF(mês='01',...)` — é frágil e
+  erra a virada de ano.
+- **Correto:** `SYS.200.Time_Travel` devolve o Ano/Mês resultante de um deslocamento
+  (`Parametro_Mes`), já tratando a virada de ano. Ex.: para o **mês anterior**
+
+  ```
+  DB('FOL.100.Folha_Pagamento',
+     DB('SYS.200.Time_Travel', !ALL.D.Ano, !ALL.D.Mes, '-1', 'Ano'),
+     DB('SYS.200.Time_Travel', !ALL.D.Ano, !ALL.D.Mes, '-1', 'Mes'),
+     !ALL.D.Versao, ..., 'Saldo Final HC')
+  ```
+
+  Use `'-1'` para mês anterior e `'1'` para o seguinte (nos feeders de roll). Ver
+  `docs/contexto/arquitetura-modelo.md` (seção Time Travel).
 
 ## Operadores e funções idiomáticos
 

@@ -41,9 +41,12 @@ ENDIF;
 - Em erro fatal: `DataSourceType = 'NULL'` + `ItemReject(msg)` com mensagem em pt-BR.
 - Garanta atributos de rejeição (`AttrInsert` em `}ElementAttributes_SYS.M.160...`).
 
-## Reuso
+## Reuso — o template é a estrutura de referência (obrigatório)
 
-Antes de escrever do zero, escolha o template mais próximo:
+Processo novo **não se escreve do zero**: parte-se sempre do `zCTI.Template.*` mais
+próximo como base de estrutura (Prolog/Metadata/Data/Epilog, log inicial de falha,
+validações, framework de rejeição) e altera-se só o que é específico (cubo/dimensão,
+colunas, validações de negócio). Processo fora dessa estrutura é tratado como defeito.
 
 | Caso | Template |
 |---|---|
@@ -52,6 +55,16 @@ Antes de escrever do zero, escolha o template mais próximo:
 | Cubo mapa → dimensão (balanceada) | `zCTI.Template.Carga.Cubo.Mapa.Para.Dimensao.Balanceada` |
 | Cubo mapa → dimensão (desbalanceada) | `zCTI.Template.Carga.Cubo.Mapa.Para.Dimensao.Desbalanceada` |
 | Cubo → cubo | `zCTI.Template.Carga.Cubo.Para.Cubo` |
+
+## Limpeza antes de carregar (NÃO usar CubeClearData em cubo de dados)
+
+Carga de **cubo de dados** (ex.: `FOL.100`, `REC.100`) **nunca** faz
+`CubeClearData` — isso apagaria todos os outros anos/versões/realizado já carregados.
+Limpe **apenas a fatia** que será recarregada, criando uma view filtrada pelos
+parâmetros (Ano/Mês/Versão/…) e aplicando `ViewZeroOut` — como no
+`zCTI.Template.Carga.Arquivo.Para.Cubo`. `CubeClearData` só é aceitável em
+**tabela de referência full-refresh** monolítica (ex.: seed do `SYS.200.Time_Travel`),
+onde não há outras fatias a preservar.
 
 ## Antes de gravar
 
