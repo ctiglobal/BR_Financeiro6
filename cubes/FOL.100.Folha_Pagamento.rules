@@ -66,54 +66,73 @@ SKIPCHECK;
 
 # --------------------------------------------------------------------------------------------
 #Name  $ Salário Base (valor unitário)
-#Desc  Real = $ Salário / Saldo Final HC. Orçado: Novos partem do Mapa (ATTRN de ALL.D.Cargos);
-#      Existentes rolam do mês anterior (SYS.200.Time_Travel '-1'). Ambos aplicam (1 + % Dissídio).
+#Desc  Real = $ Salário / Saldo Final HC. Orçado: rola o Salário Base do mês anterior
+#      (SYS.200.Time_Travel '-1') × (1 + % Dissídio) — assim o reajuste é PERMANENTE e compõe nos
+#      meses seguintes. Quando não há base no mês anterior (1º mês da posição), semeia do Mapa
+#      (ATTRN de ALL.D.Cargos) para Novos; Existentes sem base anterior = 0.
 #Date  08/07/2026
 #Author CTI Global
 # --------------------------------------------------------------------------------------------
 ['$ Salário Base']=N:
    IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
       IF( ['Saldo Final HC'] <> 0, ['$ Salário'] / ['Saldo Final HC'], 0 ),
-      IF( !ALL.D.Existente_Novo @= 'Novos',
-         ATTRN('ALL.D.Cargos', !ALL.D.Cargos, '$ Salário Base') * ( 1 + ['% Dissídio'] ),
+      IF( DB('FOL.100.Folha_Pagamento',
+            DB('SYS.200.Time_Travel', !ALL.D.Ano, !ALL.D.Mes, '-1', 'Ano'),
+            DB('SYS.200.Time_Travel', !ALL.D.Ano, !ALL.D.Mes, '-1', 'Mes'),
+            !ALL.D.Versao, !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ Salário Base' ) <> 0,
          DB('FOL.100.Folha_Pagamento',
             DB('SYS.200.Time_Travel', !ALL.D.Ano, !ALL.D.Mes, '-1', 'Ano'),
             DB('SYS.200.Time_Travel', !ALL.D.Ano, !ALL.D.Mes, '-1', 'Mes'),
-            !ALL.D.Versao, !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ Salário Base' ) * ( 1 + ['% Dissídio'] ) ) );
+            !ALL.D.Versao, !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ Salário Base' ) * ( 1 + ['% Dissídio'] ),
+         IF( !ALL.D.Existente_Novo @= 'Novos',
+            ATTRN('ALL.D.Cargos', !ALL.D.Cargos, '$ Salário Base') * ( 1 + ['% Dissídio'] ),
+            0 ) ) );
 
 # --------------------------------------------------------------------------------------------
 #Name  $ Valor Unitário Plano de Saúde
-#Desc  Real = $ Plano de Saúde / Saldo Final HC. Orçado: Novos do Mapa; Existentes rolam do mês
-#      anterior (SYS.200.Time_Travel '-1'). Ambos aplicam (1 + % Reajuste Plano de Saúde).
+#Desc  Real = $ Plano de Saúde / Saldo Final HC. Orçado: rola do mês anterior (SYS.200.Time_Travel
+#      '-1') × (1 + % Reajuste Plano de Saúde) — reajuste permanente. Sem valor no mês anterior
+#      (1º mês), semeia do Mapa para Novos; Existentes = 0.
 #Date  08/07/2026
 #Author CTI Global
 # --------------------------------------------------------------------------------------------
 ['$ Valor Unitário Plano de Saúde']=N:
    IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
       IF( ['Saldo Final HC'] <> 0, ['$ Plano de Saúde'] / ['Saldo Final HC'], 0 ),
-      IF( !ALL.D.Existente_Novo @= 'Novos',
-         ATTRN('ALL.D.Cargos', !ALL.D.Cargos, '$ Plano de Saúde') * ( 1 + ['% Reajuste Plano de Saúde'] ),
+      IF( DB('FOL.100.Folha_Pagamento',
+            DB('SYS.200.Time_Travel', !ALL.D.Ano, !ALL.D.Mes, '-1', 'Ano'),
+            DB('SYS.200.Time_Travel', !ALL.D.Ano, !ALL.D.Mes, '-1', 'Mes'),
+            !ALL.D.Versao, !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ Valor Unitário Plano de Saúde' ) <> 0,
          DB('FOL.100.Folha_Pagamento',
             DB('SYS.200.Time_Travel', !ALL.D.Ano, !ALL.D.Mes, '-1', 'Ano'),
             DB('SYS.200.Time_Travel', !ALL.D.Ano, !ALL.D.Mes, '-1', 'Mes'),
-            !ALL.D.Versao, !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ Valor Unitário Plano de Saúde' ) * ( 1 + ['% Reajuste Plano de Saúde'] ) ) );
+            !ALL.D.Versao, !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ Valor Unitário Plano de Saúde' ) * ( 1 + ['% Reajuste Plano de Saúde'] ),
+         IF( !ALL.D.Existente_Novo @= 'Novos',
+            ATTRN('ALL.D.Cargos', !ALL.D.Cargos, '$ Plano de Saúde') * ( 1 + ['% Reajuste Plano de Saúde'] ),
+            0 ) ) );
 
 # --------------------------------------------------------------------------------------------
 #Name  $ Valor Unitário Vale Refeição
-#Desc  Real = $ Vale Refeição / Saldo Final HC. Orçado: Novos do Mapa; Existentes rolam do mês
-#      anterior (SYS.200.Time_Travel '-1'). Ambos aplicam (1 + % Reajuste Vale Refeição).
+#Desc  Real = $ Vale Refeição / Saldo Final HC. Orçado: rola do mês anterior (SYS.200.Time_Travel
+#      '-1') × (1 + % Reajuste Vale Refeição) — reajuste permanente. Sem valor no mês anterior
+#      (1º mês), semeia do Mapa para Novos; Existentes = 0.
 #Date  08/07/2026
 #Author CTI Global
 # --------------------------------------------------------------------------------------------
 ['$ Valor Unitário Vale Refeição']=N:
    IF( DB('REC.000.Controle_Real_Orcado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Real ou Orçado') @= 'Real',
       IF( ['Saldo Final HC'] <> 0, ['$ Vale Refeição'] / ['Saldo Final HC'], 0 ),
-      IF( !ALL.D.Existente_Novo @= 'Novos',
-         ATTRN('ALL.D.Cargos', !ALL.D.Cargos, '$ Vale Refeição') * ( 1 + ['% Reajuste Vale Refeição'] ),
+      IF( DB('FOL.100.Folha_Pagamento',
+            DB('SYS.200.Time_Travel', !ALL.D.Ano, !ALL.D.Mes, '-1', 'Ano'),
+            DB('SYS.200.Time_Travel', !ALL.D.Ano, !ALL.D.Mes, '-1', 'Mes'),
+            !ALL.D.Versao, !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ Valor Unitário Vale Refeição' ) <> 0,
          DB('FOL.100.Folha_Pagamento',
             DB('SYS.200.Time_Travel', !ALL.D.Ano, !ALL.D.Mes, '-1', 'Ano'),
             DB('SYS.200.Time_Travel', !ALL.D.Ano, !ALL.D.Mes, '-1', 'Mes'),
-            !ALL.D.Versao, !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ Valor Unitário Vale Refeição' ) * ( 1 + ['% Reajuste Vale Refeição'] ) ) );
+            !ALL.D.Versao, !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ Valor Unitário Vale Refeição' ) * ( 1 + ['% Reajuste Vale Refeição'] ),
+         IF( !ALL.D.Existente_Novo @= 'Novos',
+            ATTRN('ALL.D.Cargos', !ALL.D.Cargos, '$ Vale Refeição') * ( 1 + ['% Reajuste Vale Refeição'] ),
+            0 ) ) );
 
 # --------------------------------------------------------------------------------------------
 #Name  $ Salário
