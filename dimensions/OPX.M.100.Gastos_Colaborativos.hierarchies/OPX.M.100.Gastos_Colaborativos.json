@@ -1,0 +1,10 @@
+{
+	"@type":"Hierarchy",
+	"Name":"OPX.M.100.Gastos_Colaborativos",
+	"Elements":
+	[
+		{ "Name":"$ Valor Gasto", "Type":"Numeric" },
+		{ "Name":"Justificativa", "Type":"String" }
+	],
+	"Subsets@Code.links":[]
+}

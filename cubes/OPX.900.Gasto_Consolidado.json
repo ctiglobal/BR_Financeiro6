@@ -1,6 +1,6 @@
 {
 	"@type":"Cube",
-	"Name":"CAP.200.Investimentos",
+	"Name":"OPX.900.Gasto_Consolidado",
 	"Dimensions":
 	[
 		{
@@ -16,9 +16,15 @@
 			"@id":"Dimensions('ALL.D.Centro_Custo')"
 		},
 		{
-			"@id":"Dimensions('CAP.M.200.Investimentos')"
+			"@id":"Dimensions('ALL.D.Conta_Contabil')"
+		},
+		{
+			"@id":"Dimensions('ALL.D.Origem_Despesas')"
+		},
+		{
+			"@id":"Dimensions('OPX.M.900.Gasto_Consolidado')"
 		}
 	],
-	"Rules@Code.link":"CAP.200.Investimentos.rules",
+	"Rules@Code.link":"OPX.900.Gasto_Consolidado.rules",
 	"Views@Code.links":[]
 }

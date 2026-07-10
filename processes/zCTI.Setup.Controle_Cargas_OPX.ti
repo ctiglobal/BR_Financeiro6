@@ -1,0 +1,12 @@
+#region Prolog
+# ===============================================================================================================
+#GENERALCOMMENT  Setup: semeia no SYS.150.Controle_Cargas os parâmetros de carga do módulo OPEX (DIM.050.1 e OPX.010.0).
+# ===============================================================================================================
+cCubo = 'SYS.150.Controle_Cargas';
+cCaminho = 'model_upload\';
+CellPutS( cCaminho, cCubo, 'DIM.050.1.CSV_para_cubo_MAP.050.Conta_Contabil', 'Caminho do Arquivo Fonte' );
+CellPutS( 'N', cCubo, 'DIM.050.1.CSV_para_cubo_MAP.050.Conta_Contabil', 'Debug (S/N)' );
+CellPutS( 'N', cCubo, 'DIM.050.1.CSV_para_cubo_MAP.050.Conta_Contabil', 'Gerar Log de Alteração (S/N)' );
+CellPutS( cCaminho, cCubo, 'OPX.010.0.CSV_para_cubo_OPX.900.Gasto_Consolidado - Carga Realizado', 'Caminho do Arquivo Fonte' );
+CellPutS( 'N', cCubo, 'OPX.010.0.CSV_para_cubo_OPX.900.Gasto_Consolidado - Carga Realizado', 'Debug (S/N)' );
+#endregion

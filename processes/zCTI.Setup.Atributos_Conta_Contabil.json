@@ -1,0 +1,12 @@
+{
+	"@type":"Process",
+	"Name":"zCTI.Setup.Atributos_Conta_Contabil",
+	"HasSecurityAccess":false,
+	"Code@Code.link":"zCTI.Setup.Atributos_Conta_Contabil.ti",
+	"DataSource":
+	{
+		"Type":"None"
+	},
+	"Parameters":[],
+	"Variables":[]
+}

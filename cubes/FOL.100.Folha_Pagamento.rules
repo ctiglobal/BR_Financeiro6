@@ -284,3 +284,24 @@ FEEDERS;
       DB('SYS.200.Time_Travel', !ALL.D.Ano, !ALL.D.Mes, '1', 'Ano'),
       DB('SYS.200.Time_Travel', !ALL.D.Ano, !ALL.D.Mes, '1', 'Mes'),
       !ALL.D.Versao, !ALL.D.Existente_Novo, !ALL.D.Centro_Custo, !ALL.D.Cargos, '$ Saldo Férias a Pagar' );
+
+# --- Feeder cross-cubo: alimenta OPX.900.Gasto_Consolidado (origem FOL.100, contas de pessoal) ---
+# 13º Salário (40000002) e Férias (40000003) são alimentados pelos componentes provisão + correção.
+['$ Salário'] =>
+   DB('OPX.900.Gasto_Consolidado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, !ALL.D.Centro_Custo, '40000001', 'FOL.100', '$ Valor Gasto');
+['$ Provisão 13º Salário'] =>
+   DB('OPX.900.Gasto_Consolidado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, !ALL.D.Centro_Custo, '40000002', 'FOL.100', '$ Valor Gasto');
+['$ Correção Saldo 13º Salário'] =>
+   DB('OPX.900.Gasto_Consolidado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, !ALL.D.Centro_Custo, '40000002', 'FOL.100', '$ Valor Gasto');
+['$ Provisão Férias'] =>
+   DB('OPX.900.Gasto_Consolidado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, !ALL.D.Centro_Custo, '40000003', 'FOL.100', '$ Valor Gasto');
+['$ Correção Saldo Férias a Pagar'] =>
+   DB('OPX.900.Gasto_Consolidado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, !ALL.D.Centro_Custo, '40000003', 'FOL.100', '$ Valor Gasto');
+['$ INSS'] =>
+   DB('OPX.900.Gasto_Consolidado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, !ALL.D.Centro_Custo, '40000004', 'FOL.100', '$ Valor Gasto');
+['$ FGTS'] =>
+   DB('OPX.900.Gasto_Consolidado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, !ALL.D.Centro_Custo, '40000005', 'FOL.100', '$ Valor Gasto');
+['$ Plano de Saúde'] =>
+   DB('OPX.900.Gasto_Consolidado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, !ALL.D.Centro_Custo, '40000006', 'FOL.100', '$ Valor Gasto');
+['$ Vale Refeição'] =>
+   DB('OPX.900.Gasto_Consolidado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, !ALL.D.Centro_Custo, '40000007', 'FOL.100', '$ Valor Gasto');

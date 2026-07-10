@@ -1,0 +1,34 @@
+{
+	"@type":"Process",
+	"Name":"DIM.050.1.CSV_para_cubo_MAP.050.Conta_Contabil",
+	"HasSecurityAccess":false,
+	"Code@Code.link":"DIM.050.1.CSV_para_cubo_MAP.050.Conta_Contabil.ti",
+	"DataSource":
+	{
+		"Type":"ASCII",
+		"asciiDecimalSeparator":",",
+		"asciiDelimiterChar":";",
+		"asciiDelimiterType":"Character",
+		"asciiHeaderRecords":1,
+		"asciiQuoteCharacter":"",
+		"asciiThousandSeparator":".",
+		"dataSourceNameForClient":"model_upload/Mapa_Conta_Contabil.csv",
+		"dataSourceNameForServer":"model_upload/Mapa_Conta_Contabil.csv"
+	},
+	"Parameters":
+	[
+		{
+			"Name":"pFile",
+			"Prompt":"Nome do arquivo CSV",
+			"Value":"Mapa_Conta_Contabil.csv",
+			"Type":"String"
+		}
+	],
+	"Variables":
+	[
+		{ "Name":"vElement", "Type":"String", "Position":1, "StartByte":0, "EndByte":0 },
+		{ "Name":"vDesc", "Type":"String", "Position":2, "StartByte":0, "EndByte":0 },
+		{ "Name":"vNivel1", "Type":"String", "Position":3, "StartByte":0, "EndByte":0 },
+		{ "Name":"vNivel2", "Type":"String", "Position":4, "StartByte":0, "EndByte":0 }
+	]
+}

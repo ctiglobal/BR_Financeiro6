@@ -1,0 +1,9 @@
+{
+	"@type":"Hierarchy",
+	"Name":"OPX.M.900.Gasto_Consolidado",
+	"Elements":
+	[
+		{ "Name":"$ Valor Gasto", "Type":"Numeric" }
+	],
+	"Subsets@Code.links":[]
+}

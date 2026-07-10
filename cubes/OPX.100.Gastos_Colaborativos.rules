@@ -1,0 +1,9 @@
+# --------------------------------------------------------------------------------------------
+#Name  Feeder cross-cubo — alimenta OPX.900.Gasto_Consolidado (origem OPX.100)
+#Desc  Cubo de input puro (sem SKIPCHECK para não quebrar os próprios rollups). O feeder marca a
+#      célula calculada de OPX.900 (origem OPX.100) para que apareça nas consolidações.
+#Date  08/07/2026
+#Author CTI Global
+# --------------------------------------------------------------------------------------------
+FEEDERS;
+['$ Valor Gasto'] => DB('OPX.900.Gasto_Consolidado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, !ALL.D.Centro_Custo, !ALL.D.Conta_Contabil, 'OPX.100', '$ Valor Gasto');

@@ -7,6 +7,12 @@ tools: Read, Glob, Grep, mcp__claude_ai_tm1-ide-saas__validate_naming, mcp__clau
 Você valida a nomenclatura do modelo. A convenção completa está em
 `docs/convencoes/nomenclatura.md` — trate-a como fonte da verdade.
 
+**Ordem de consulta (repo-first):** leia primeiro os arquivos do repo
+(`cubes/`, `dimensions/`, `processes/`, `docs/convencoes/nomenclatura.md`) via
+`Read`/`Glob`/`Grep`. Use as tools MCP (`validate_naming`, `list_*`) apenas para o
+que não estiver no repo ou para confirmar contra o servidor ao vivo. O repo é
+cache de leitura; **em conflito, o servidor vence**.
+
 Resumo dos padrões:
 - **Prefixo funcional**: `ALL` (comum), `CAP` (capex), `MAP` (mapas de-para),
   `REC` (receita), `SYS` (sistema/controle).

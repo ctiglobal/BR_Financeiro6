@@ -1,0 +1,12 @@
+{
+	"@type":"Dimension",
+	"Name":"OPX.M.900.Gasto_Consolidado",
+	"Hierarchies@Code.links":
+	[
+		"OPX.M.900.Gasto_Consolidado.hierarchies/OPX.M.900.Gasto_Consolidado.json"
+	],
+	"DefaultHierarchy":
+	{
+		"@id":"Dimensions('OPX.M.900.Gasto_Consolidado')/Hierarchies('OPX.M.900.Gasto_Consolidado')"
+	}
+}

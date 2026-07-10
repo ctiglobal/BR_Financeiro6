@@ -1,0 +1,15 @@
+#region Prolog
+# ===============================================================================================================
+#GENERALCOMMENT  Descrição:  Setup: cria os atributos e alias das dimensões ALL.D.Conta_Contabil e MAP.D.050.Conta_Contabil
+#GENERALCOMMENT  Responsável: CTI Global
+#GENERALCOMMENT  Data Criação: Julho/2026
+# ===============================================================================================================
+# AttrInsert é idempotente; garante que os atributos existam ANTES do AttrPutS dos processos de carga
+# (neste servidor AttrPutS em atributo inexistente falha silenciosamente).
+
+AttrInsert( 'MAP.D.050.Conta_Contabil', '', 'Código e Descrição', 'A' );
+AttrInsert( 'ALL.D.Conta_Contabil', '', 'Descrição', 'S' );
+AttrInsert( 'ALL.D.Conta_Contabil', '', 'Agrupamento Nível 1', 'S' );
+AttrInsert( 'ALL.D.Conta_Contabil', '', 'Agrupamento Nível 2', 'S' );
+AttrInsert( 'ALL.D.Conta_Contabil', '', 'Código e Descrição', 'A' );
+#endregion

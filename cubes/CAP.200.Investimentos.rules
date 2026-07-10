@@ -1,0 +1,9 @@
+# --------------------------------------------------------------------------------------------
+#Name  Feeder cross-cubo — alimenta OPX.900.Gasto_Consolidado (origem CAP.200)
+#Desc  Cubo de input puro (sem SKIPCHECK). O feeder marca a célula de OPX.900 (origem CAP.200,
+#      conta Depreciação 40000021) para que apareça nas consolidações.
+#Date  08/07/2026
+#Author CTI Global
+# --------------------------------------------------------------------------------------------
+FEEDERS;
+['$ Depreciação'] => DB('OPX.900.Gasto_Consolidado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, !ALL.D.Centro_Custo, '40000021', 'CAP.200', '$ Valor Gasto');

@@ -10,14 +10,17 @@ divergências são tratadas como defeito. Derivada dos objetos existentes no rep
 | `ALL` | Dimensões comuns/compartilhadas | `ALL.D.Ano`, `ALL.D.Produto`, `ALL.D.Versao` |
 | `CAP` | CAPEX / Investimentos | `CAP.200.Investimentos`, `CAP.M.200.Investimentos` |
 | `FOL` | Folha de Pagamento | `FOL.100.Folha_Pagamento`, `FOL.010.Premissas_Gerais`, `FOL.M.100.Folha_Pagamento` |
-| `MAP` | Mapas de-para (staging) | `MAP.010.Produto`, `MAP.D.Centro_Custo`, `MAP.040.Cargos` |
+| `MAP` | Mapas de-para (staging) | `MAP.010.Produto`, `MAP.D.Centro_Custo`, `MAP.040.Cargos`, `MAP.050.Conta_Contabil` |
+| `OPX` | OPEX / Gastos (colaborativo + consolidado) | `OPX.100.Gastos_Colaborativos`, `OPX.900.Gasto_Consolidado`, `OPX.M.900.Gasto_Consolidado` |
 | `REC` | Receita e premissas | `REC.100.Receita`, `REC.030.Premissas_Produto` |
 | `SYS` | Sistema / controle de carga | `SYS.150.Controle_Cargas`, `SYS.160.Rejeitados_Cargas` |
 
 > **Prefixos de processo (TI):** além de `CUB`/`DIM` (ver seção Processos), o módulo de
 > Folha usa `RH` para a carga do realizado da folha
 > (`RH.020.0.CSV_para_cubo_FOL.100.Folha_Pagamento - Carga Realizado`), conforme o
-> desenho do "Desafio Final – Folha".
+> desenho do "Desafio Final – Folha". O módulo de OPEX usa `OPX` para a carga do
+> realizado do gasto consolidado
+> (`OPX.010.0.CSV_para_cubo_OPX.900.Gasto_Consolidado - Carga Realizado`).
 
 ## Tipo de dimensão
 
@@ -35,6 +38,7 @@ Blocos numéricos ordenam por etapa/domínio e mantêm objetos relacionados junt
 - `100` — cubo transacional principal do domínio (`REC.100.Receita`).
 - `150`/`160` — controle e rejeição de cargas (`SYS.150`, `SYS.160`).
 - `200` — outro domínio transacional (`CAP.200.Investimentos`).
+- `900` — cubo consolidador/agregador cross-módulo (`OPX.900.Gasto_Consolidado`).
 
 ## Processos (TurboIntegrator)
 

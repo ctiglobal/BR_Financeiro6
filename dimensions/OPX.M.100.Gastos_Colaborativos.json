@@ -1,0 +1,12 @@
+{
+	"@type":"Dimension",
+	"Name":"OPX.M.100.Gastos_Colaborativos",
+	"Hierarchies@Code.links":
+	[
+		"OPX.M.100.Gastos_Colaborativos.hierarchies/OPX.M.100.Gastos_Colaborativos.json"
+	],
+	"DefaultHierarchy":
+	{
+		"@id":"Dimensions('OPX.M.100.Gastos_Colaborativos')/Hierarchies('OPX.M.100.Gastos_Colaborativos')"
+	}
+}

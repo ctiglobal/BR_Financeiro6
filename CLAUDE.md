@@ -35,6 +35,14 @@ Estrutura do modelo (não editar à toa — são artefatos gerados/versionados d
    confirme `connection_id`/ambiente antes de escrever.
 6. Responda e comente **em português** (pt-BR). Mantenha nomes de objetos
    TM1/SAP no idioma original.
+7. **Consulta de metadados: repo primeiro, MCP como autoridade.** Para orientação
+   e leitura estrutural (dimensões de um cubo, lógica de `.rules`/`.ti`, processos
+   existentes, conferência de nomes), consulte primeiro `cubes/`, `dimensions/`,
+   `processes/`; só recorra ao MCP se não encontrar. O repo é **cache de leitura**,
+   não a verdade viva: **antes de qualquer escrita** no servidor, ou em validação
+   que decide uma mutação, o **MCP é a autoridade** e, em conflito, **o servidor
+   vence**. Não vale para **dados** nem para atributos/views/segurança/sort (não
+   versionados). Detalhe e ritual de reconciliação em `docs/guardrails.md`.
 
 ## Mapa da documentação (`docs/`)
 

@@ -1,0 +1,12 @@
+#region Prolog
+# ===============================================================================================================
+#GENERALCOMMENT  Descrição:  Orquestrador do cadastro de Conta Contábil: chama, na ordem, atributos, carga do mapa e reconstrução da dimensão
+#GENERALCOMMENT  Responsável: CTI Global
+#GENERALCOMMENT  Data Criação: Julho/2026
+# ===============================================================================================================
+# Sequência: (1) cria atributos, (2) carrega CSV no cubo mapa, (3) reconstrói a hierarquia (N1 -> N2 -> Conta).
+
+ExecuteProcess( 'zCTI.Setup.Atributos_Conta_Contabil' );
+ExecuteProcess( 'DIM.050.1.CSV_para_cubo_MAP.050.Conta_Contabil', 'pFile', 'Mapa_Conta_Contabil.csv' );
+ExecuteProcess( 'DIM.050.2.cubo_MAP.050_para_dim_ALL.D.Conta_Contabil' );
+#endregion

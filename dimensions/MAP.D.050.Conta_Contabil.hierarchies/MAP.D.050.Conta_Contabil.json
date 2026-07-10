@@ -1,0 +1,35 @@
+{
+	"@type":"Hierarchy",
+	"Name":"MAP.D.050.Conta_Contabil",
+	"Elements":
+	[
+		{ "Name":"30000001", "Type":"Numeric" },
+		{ "Name":"30000002", "Type":"Numeric" },
+		{ "Name":"30000003", "Type":"Numeric" },
+		{ "Name":"40000001", "Type":"Numeric" },
+		{ "Name":"40000002", "Type":"Numeric" },
+		{ "Name":"40000003", "Type":"Numeric" },
+		{ "Name":"40000004", "Type":"Numeric" },
+		{ "Name":"40000005", "Type":"Numeric" },
+		{ "Name":"40000006", "Type":"Numeric" },
+		{ "Name":"40000007", "Type":"Numeric" },
+		{ "Name":"40000008", "Type":"Numeric" },
+		{ "Name":"40000009", "Type":"Numeric" },
+		{ "Name":"40000010", "Type":"Numeric" },
+		{ "Name":"40000011", "Type":"Numeric" },
+		{ "Name":"40000012", "Type":"Numeric" },
+		{ "Name":"40000013", "Type":"Numeric" },
+		{ "Name":"40000014", "Type":"Numeric" },
+		{ "Name":"40000015", "Type":"Numeric" },
+		{ "Name":"40000016", "Type":"Numeric" },
+		{ "Name":"40000017", "Type":"Numeric" },
+		{ "Name":"40000018", "Type":"Numeric" },
+		{ "Name":"40000019", "Type":"Numeric" },
+		{ "Name":"40000020", "Type":"Numeric" },
+		{ "Name":"40000021", "Type":"Numeric" }
+	],
+	"Subsets@Code.links":
+	[
+		"MAP.D.050.Conta_Contabil.subsets/zAll.json"
+	]
+}

@@ -1,0 +1,32 @@
+{
+	"@type":"Process",
+	"Name":"OPX.010.0.CSV_para_cubo_OPX.900.Gasto_Consolidado - Carga Realizado",
+	"HasSecurityAccess":false,
+	"Code@Code.link":"OPX.010.0.CSV_para_cubo_OPX.900.Gasto_Consolidado - Carga Realizado.ti",
+	"DataSource":
+	{
+		"Type":"ASCII",
+		"asciiDecimalSeparator":",",
+		"asciiDelimiterChar":";",
+		"asciiDelimiterType":"Character",
+		"asciiHeaderRecords":1,
+		"asciiQuoteCharacter":"",
+		"asciiThousandSeparator":".",
+		"dataSourceNameForClient":"model_upload/Base_Gastos_Realizado.csv",
+		"dataSourceNameForServer":"model_upload/Base_Gastos_Realizado.csv"
+	},
+	"Parameters":
+	[
+		{ "Name":"pAno", "Prompt":"Ano", "Value":"", "Type":"String" },
+		{ "Name":"pMes", "Prompt":"Mês", "Value":"", "Type":"String" },
+		{ "Name":"pVersao", "Prompt":"Versão", "Value":"RE", "Type":"String" },
+		{ "Name":"pFile", "Prompt":"Nome do arquivo CSV (opcional; se vazio monta a partir de Ano/Mês)", "Value":"", "Type":"String" }
+	],
+	"Variables":
+	[
+		{ "Name":"vCC", "Type":"String", "Position":1, "StartByte":0, "EndByte":0 },
+		{ "Name":"vConta", "Type":"String", "Position":2, "StartByte":0, "EndByte":0 },
+		{ "Name":"vValor", "Type":"String", "Position":3, "StartByte":0, "EndByte":0 },
+		{ "Name":"vJustificativa", "Type":"String", "Position":4, "StartByte":0, "EndByte":0 }
+	]
+}

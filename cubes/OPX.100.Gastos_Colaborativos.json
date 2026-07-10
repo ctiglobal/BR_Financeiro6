@@ -1,6 +1,6 @@
 {
 	"@type":"Cube",
-	"Name":"CAP.200.Investimentos",
+	"Name":"OPX.100.Gastos_Colaborativos",
 	"Dimensions":
 	[
 		{
@@ -16,9 +16,12 @@
 			"@id":"Dimensions('ALL.D.Centro_Custo')"
 		},
 		{
-			"@id":"Dimensions('CAP.M.200.Investimentos')"
+			"@id":"Dimensions('ALL.D.Conta_Contabil')"
+		},
+		{
+			"@id":"Dimensions('OPX.M.100.Gastos_Colaborativos')"
 		}
 	],
-	"Rules@Code.link":"CAP.200.Investimentos.rules",
+	"Rules@Code.link":"OPX.100.Gastos_Colaborativos.rules",
 	"Views@Code.links":[]
 }

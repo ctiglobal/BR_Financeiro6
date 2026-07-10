@@ -1,0 +1,201 @@
+#region Prolog
+# ===============================================================================================================
+#GENERALCOMMENT  Descrição:  Carrega o CSV do mapa de Conta Contábil para o cubo mapa MAP.050.Conta_Contabil
+#GENERALCOMMENT  Responsável: CTI Global
+#GENERALCOMMENT  Data Criação: Julho/2026
+# ===============================================================================================================
+# Glossário: v=entrada / p=parâmetro / c=constante / n=numérica / s=string
+# CSV: Código;Descrição;Agrupamento Nível 1;Agrupamento Nível 2 (delimitador ; / sem aspas).
+# Ao reaproveitar alterar: cCuboDestino (cubo mapa de destino).
+
+cCuboDestino = 'MAP.050.Conta_Contabil';
+
+cUsuario = IF( DimIx( '}Clients' , TM1User() ) = 0, 'Executed by Chore' , TM1User() );
+cCuboParametro = 'SYS.150.Controle_Cargas';
+cCuboReject = 'SYS.160.Rejeitados_Cargas';
+cCuboPropriedade = '}CubeProperties';
+cHorarioInicio = Now();
+cProcesso = GetProcessName();
+cMensagemRegistro = '';
+cMensagemProcesso = '';
+cExisteRegistroRejeitado = 0;
+cExisteCabecalhoRejeitado = 0;
+cContadorRegistro = 0;
+cContadorRejeitados = 0;
+cTipoErro = 0;
+cCaminhoArquivoFonte = CellGetS( cCuboParametro , cProcesso , 'Caminho do Arquivo Fonte' );
+cUtilizarDebug = CellGetS( cCuboParametro , cProcesso , 'Debug (S/N)' );
+cGravarLogAlteracao = CellGetS( cCuboParametro , cProcesso , 'Gerar Log de Alteração (S/N)' );
+cUtilizarDebug = IF( cUtilizarDebug @= 'S' , 'S' , 'N' );
+cGravarLogAlteracao = IF( cGravarLogAlteracao @= 'S' , 'S' , 'N' );
+
+# Log inicial como falha
+CellPutS( TimSt( cHorarioInicio , '\Y-\m-\d \hh\im\ss' ), cCuboParametro, cProcesso, 'DataHora Inicio' );
+CellPutS( TimSt( cHorarioInicio , '\Y-\m-\d \hh\im\ss' ), cCuboParametro, cProcesso, 'DataHora Fim' );
+CellPutS( cUsuario, cCuboParametro, cProcesso, 'Usuário' );
+CellPutS( 'Processo com falha, contate o administrador para verificar os logs de erro do sistema', cCuboParametro, cProcesso, 'Mensagem de Log' );
+CellPutS( '0', cCuboParametro, cProcesso, 'Registros Processados' );
+
+# ACELERADOR - Limpa rejeições anteriores deste processo no SYS.160 (view temporária)
+cViewR = 'proc.RejLimpeza.DIM0501';
+cSubR = cViewR;
+ViewCreate( cCuboReject, cViewR, 1 );
+SubsetCreate( '}Processes', cSubR, 1 );
+ViewSubsetAssign( cCuboReject, cViewR, '}Processes', cSubR );
+SubsetElementInsert( '}Processes', cSubR, cProcesso, 1 );
+ViewExtractSkipCalcsSet( cCuboReject, cViewR, 1 );
+ViewExtractSkipZeroesSet( cCuboReject, cViewR, 0 );
+ViewExtractSkipRuleValuesSet( cCuboReject, cViewR, 1 );
+ViewZeroOut( cCuboReject, cViewR );
+
+# Configuração ASCII
+DataSourceASCIIDelimiter = ';';
+DataSourceASCIIThousandSeparator = '.';
+DataSourceASCIIDecimalSeparator = ',';
+DataSourceQuoteCharacter = '';
+
+# Validação do arquivo fonte
+IF( cCaminhoArquivoFonte @= '' );
+   cTipoErro = 1;
+   cMensagemProcesso = 'O caminho onde esta o arquivo fonte não foi informado, informe no cubo: "' | cCuboParametro | '"';
+   DataSourceType = 'NULL';
+   ItemReject( cMensagemProcesso );
+ENDIF;
+cCaminhoArquivoFonte = IF( SUBST( cCaminhoArquivoFonte , LONG( cCaminhoArquivoFonte ) , 1 ) @<> '\' , cCaminhoArquivoFonte | '\' , cCaminhoArquivoFonte );
+IF( FileExists( cCaminhoArquivoFonte ) = 0 );
+   cTipoErro = 1;
+   cMensagemProcesso = 'O diretório especificado para o arquivo fonte  "' | cCaminhoArquivoFonte | '"   não existe';
+   DataSourceType = 'NULL';
+   ItemReject( cMensagemProcesso );
+ENDIF;
+cNomeArquivoFonteCompleto = cCaminhoArquivoFonte | pFile;
+IF( FileExists( cNomeArquivoFonteCompleto ) = 0 );
+   cTipoErro = 1;
+   cMensagemProcesso = 'O arquivo   "' | pFile | '"   não existe no diretorio:   "' | cCaminhoArquivoFonte | '"';
+   DataSourceType = 'NULL';
+   ItemReject( cMensagemProcesso );
+ENDIF;
+DatasourceNameForClient = cNomeArquivoFonteCompleto;
+DatasourceNameForServer = cNomeArquivoFonteCompleto;
+
+# ACELERADOR - Desliga o log do cubo destino durante a carga
+sLog = IF( cGravarLogAlteracao @= 'N', 'NO', 'YES' );
+CellPutS( sLog, cCuboPropriedade, cCuboDestino, 'LOGGING' );
+
+# Limpa o cubo destino e reseta o mapa (staging reflete apenas o arquivo atual)
+CubeClearData( cCuboDestino );
+nS = DimSiz('MAP.D.050.Conta_Contabil');
+WHILE( nS > 0 );
+   sE = DimNm('MAP.D.050.Conta_Contabil', nS);
+   DimensionElementDelete('MAP.D.050.Conta_Contabil', sE);
+   nS = nS - 1;
+END;
+#endregion
+#region Metadata
+# ===============================================================================================================
+#METADATACOMMENT  Descrição:  Insere o elemento no mapa MAP.D.050.Conta_Contabil apenas para linhas totalmente válidas.
+# ===============================================================================================================
+vElement = Trim( vElement );
+vDesc = Trim( vDesc );
+vNivel1 = Trim( vNivel1 );
+vNivel2 = Trim( vNivel2 );
+IF( vElement @<> '' & vDesc @<> '' & vNivel1 @<> '' & vNivel2 @<> '' );
+   IF( DimIx('MAP.D.050.Conta_Contabil', vElement) = 0 );
+      DimensionElementInsert('MAP.D.050.Conta_Contabil','',vElement,'n');
+   ENDIF;
+ENDIF;
+#endregion
+#region Data
+# ===============================================================================================================
+#DATACOMMENT  Descrição:  Valida colunas obrigatórias, rejeita para SYS.160 e grava as métricas + alias no cubo mapa.
+# ===============================================================================================================
+cContadorRegistro = cContadorRegistro + 1;
+sContadorRegistro = NumberToString( cContadorRegistro );
+vElement = Trim( vElement );
+vDesc = Trim( vDesc );
+vNivel1 = Trim( vNivel1 );
+vNivel2 = Trim( vNivel2 );
+
+# Pula linha totalmente vazia
+IF( '' @= vElement & '' @= vDesc & '' @= vNivel1 & '' @= vNivel2 );
+   ItemSkip;
+ENDIF;
+
+# Validações de coluna obrigatória em branco
+cExisteRegistroRejeitado = 0;
+cMensagemRegistro = '';
+IF( vElement @= '' );
+   cMensagemRegistro = 'A coluna [ Código ] está em branco';
+   cExisteRegistroRejeitado = 1;
+ENDIF;
+IF( cExisteRegistroRejeitado = 0 & vDesc @= '' );
+   cMensagemRegistro = 'A coluna [ Descrição ] está em branco';
+   cExisteRegistroRejeitado = 1;
+ENDIF;
+IF( cExisteRegistroRejeitado = 0 & vNivel1 @= '' );
+   cMensagemRegistro = 'A coluna [ Agrupamento Nível 1 ] está em branco';
+   cExisteRegistroRejeitado = 1;
+ENDIF;
+IF( cExisteRegistroRejeitado = 0 & vNivel2 @= '' );
+   cMensagemRegistro = 'A coluna [ Agrupamento Nível 2 ] está em branco';
+   cExisteRegistroRejeitado = 1;
+ENDIF;
+
+# Rejeição: grava no SYS.160 e pula a linha
+IF( cExisteRegistroRejeitado = 1 % cUtilizarDebug @= 'S' );
+   IF( cExisteCabecalhoRejeitado = 0 );
+      AttrPutS( 'Num. Registro', 'SYS.M.160.Rejeitados_Cargas', 'Linha de Registro', cProcesso );
+      AttrPutS( 'Mensagem de Erro', 'SYS.M.160.Rejeitados_Cargas', 'Mensagem', cProcesso );
+      AttrPutS( 'Código', 'SYS.M.160.Rejeitados_Cargas', 'COL1', cProcesso );
+      AttrPutS( 'Descrição', 'SYS.M.160.Rejeitados_Cargas', 'COL2', cProcesso );
+      AttrPutS( 'Agrupamento Nível 1', 'SYS.M.160.Rejeitados_Cargas', 'COL3', cProcesso );
+      AttrPutS( 'Agrupamento Nível 2', 'SYS.M.160.Rejeitados_Cargas', 'COL4', cProcesso );
+      cExisteCabecalhoRejeitado = 1;
+      cTipoErro = 2;
+      IF( cUtilizarDebug @= 'S' );
+         cMensagemProcesso = 'Processo concluido com registros salvos no cubo de Debug, verificar o cubo: ' | cCuboReject;
+      ENDIF;
+   ENDIF;
+   cContadorRejeitados = cContadorRejeitados + 1;
+   sLinha = 'L' | NumberToString( cContadorRejeitados );
+   IF( DIMIX( 'SYS.D.Linha', sLinha ) <> 0 );
+      CellPutS( sContadorRegistro, cCuboReject, cProcesso, cUsuario, sLinha, 'Linha de Registro' );
+      CellPutS( cMensagemRegistro, cCuboReject, cProcesso, cUsuario, sLinha, 'Mensagem' );
+      CellPutS( vElement, cCuboReject, cProcesso, cUsuario, sLinha, 'COL1' );
+      CellPutS( vDesc, cCuboReject, cProcesso, cUsuario, sLinha, 'COL2' );
+      CellPutS( vNivel1, cCuboReject, cProcesso, cUsuario, sLinha, 'COL3' );
+      CellPutS( vNivel2, cCuboReject, cProcesso, cUsuario, sLinha, 'COL4' );
+   ENDIF;
+   IF( cExisteRegistroRejeitado = 1 );
+      cMensagemProcesso = 'Processo concluido com registros rejeitados, verificar o cubo: ' | cCuboReject;
+      ItemSkip;
+   ENDIF;
+ENDIF;
+
+# Grava as métricas no cubo mapa e o alias no elemento
+CellPutS( vDesc, cCuboDestino, vElement, 'Descrição' );
+CellPutS( vNivel1, cCuboDestino, vElement, 'Agrupamento Nível 1' );
+CellPutS( vNivel2, cCuboDestino, vElement, 'Agrupamento Nível 2' );
+sAlias = 'Código e Descrição';
+IF( vElement @<> '' & vDesc @<> '' );
+   AttrPutS( vElement | ' - ' | vDesc, 'MAP.D.050.Conta_Contabil', vElement, sAlias );
+ENDIF;
+#endregion
+#region Epilog
+# ===============================================================================================================
+#EPILOGCOMMENT  Descrição:  Reabilita o log do cubo, salva os dados e registra o status no SYS.150.
+# ===============================================================================================================
+CellPutS( 'YES', cCuboPropriedade, cCuboDestino, 'LOGGING' );
+CubeSaveData( cCuboDestino );
+IF( cTipoErro = 0 );
+   cMensagemProcesso = 'Processo concluído com sucesso';
+ENDIF;
+CellPutS( TimSt( cHorarioInicio , '\Y-\m-\d \hh\im\ss' ) , cCuboParametro, cProcesso, 'DataHora Fim' );
+CellPutS( cUsuario , cCuboParametro, cProcesso, 'Usuário' );
+CellPutS( cMensagemProcesso , cCuboParametro, cProcesso, 'Mensagem de Log' );
+CellPutS( sContadorRegistro , cCuboParametro, cProcesso, 'Registros Processados' );
+CellPutS( TimSt( Now - cHorarioInicio, ' \h:\i:\s') , cCuboParametro, cProcesso, 'Tempo de Execução' );
+IF( cTipoErro = 2 );
+   ItemReject( cMensagemProcesso );
+ENDIF;
+#endregion

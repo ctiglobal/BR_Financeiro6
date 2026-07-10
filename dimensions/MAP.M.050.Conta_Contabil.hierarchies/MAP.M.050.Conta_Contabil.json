@@ -1,0 +1,11 @@
+{
+	"@type":"Hierarchy",
+	"Name":"MAP.M.050.Conta_Contabil",
+	"Elements":
+	[
+		{ "Name":"Descrição", "Type":"String" },
+		{ "Name":"Agrupamento Nível 1", "Type":"String" },
+		{ "Name":"Agrupamento Nível 2", "Type":"String" }
+	],
+	"Subsets@Code.links":[]
+}

@@ -1,0 +1,103 @@
+#region Prolog
+# ===============================================================================================================
+#GENERALCOMMENT  Descrição:  Atualiza a dimensão ALL.D.Conta_Contabil (hierarquia N1 -> N2 -> Conta) a partir do cubo mapa MAP.050.Conta_Contabil
+#GENERALCOMMENT  Responsável: CTI Global
+#GENERALCOMMENT  Data Criação: Julho/2026
+# ===============================================================================================================
+# Glossário: v=entrada / p=parâmetro / c=constante / n=numérica / s=string
+# Ao reaproveitar alterar: cDimensao, cCuboMapa, cTotalizador. Mapa de 2 níveis (Agrupamento Nível 1 e 2).
+
+cDimensao    = 'ALL.D.Conta_Contabil';
+cCuboMapa    = 'MAP.050.Conta_Contabil';
+cTotalizador = 'Total Conta Contábil';
+
+cUsuario = IF( DimIx( '}Clients' , TM1User() ) = 0, 'Executed by Chore' , TM1User() );
+cCuboParametro = 'SYS.150.Controle_Cargas';
+cHorarioInicio = Now();
+cProcesso = GetProcessName();
+cMensagemProcesso = '';
+cContadorRegistro = 0;
+
+# Log inicial como falha
+CellPutS( TimSt( cHorarioInicio , '\Y-\m-\d \hh\im\ss' ), cCuboParametro, cProcesso, 'DataHora Inicio' );
+CellPutS( TimSt( cHorarioInicio , '\Y-\m-\d \hh\im\ss' ), cCuboParametro, cProcesso, 'DataHora Fim' );
+CellPutS( cUsuario, cCuboParametro, cProcesso, 'Usuário' );
+CellPutS( 'Processo com falha, contate o administrador para verificar os logs de erro do sistema', cCuboParametro, cProcesso, 'Mensagem de Log' );
+CellPutS( '0', cCuboParametro, cProcesso, 'Registros Processados' );
+
+# Limpa todos os consolidados da dimensão (mantém as folhas)
+vElemento = DimSiz(cDimensao);
+vCount = vElemento;
+WHILE(vCount <> 0);
+  vElementoN = DimNm(cDimensao, vCount);
+  IF(DTYPE(cDimensao, vElementoN) @= 'C');
+    DimensionElementDelete(cDimensao, vElementoN);
+  ENDIF;
+  vCount = vCount - 1;
+END;
+
+# Insere o totalizador e define a ordenação
+DimensionElementInsert ( cDimensao, '', cTotalizador, 'C' );
+DimensionSortOrder ( cDimensao, 'ByName', 'Ascending', 'ByHierarchy' , 'Ascending' );
+#endregion
+#region Metadata
+# ===============================================================================================================
+#METADATACOMMENT  Descrição:  Reconstrói a hierarquia Total -> Agrupamento Nível 1 -> Agrupamento Nível 2 -> Conta.
+# ===============================================================================================================
+sNivel1 = CellGetS( cCuboMapa, vElement, 'Agrupamento Nível 1' );
+sNivel2 = CellGetS( cCuboMapa, vElement, 'Agrupamento Nível 2' );
+sElm = vElement;
+sDim = cDimensao;
+sTot = cTotalizador;
+
+# Nível Total -> Nível 1
+If ( sNivel1 @<> '' );
+    DimensionElementComponentAdd ( sDim, sTot, sNivel1, 1 );
+Else;
+    DimensionElementComponentAdd ( sDim, sTot, sElm, 1 );
+EndIf;
+
+# Nível 1 -> Nível 2
+If ( sNivel2 @<> '' & sNivel1 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel1, sNivel2, 1 );
+ElseIf ( sNivel1 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel1, sElm, 1 );
+EndIf;
+
+# Nível 2 -> Folha (Conta)
+If ( sNivel2 @<> '' );
+    DimensionElementComponentAdd ( sDim, sNivel2, sElm, 1 );
+EndIf;
+#endregion
+#region Data
+# ===============================================================================================================
+#DATACOMMENT  Descrição:  Atualiza atributos (Descrição, Agrupamento Nível 1 e 2) e o alias 'Código e Descrição'.
+# ===============================================================================================================
+cContadorRegistro = cContadorRegistro + 1;
+sContadorRegistro = NumberToString( cContadorRegistro );
+
+sDescElement = CellGetS( cCuboMapa, vElement, 'Descrição' );
+sNivel1 = CellGetS( cCuboMapa, vElement, 'Agrupamento Nível 1' );
+sNivel2 = CellGetS( cCuboMapa, vElement, 'Agrupamento Nível 2' );
+sDim = cDimensao;
+
+AttrPutS( sDescElement, sDim, vElement, 'Descrição' );
+AttrPutS( sNivel1, sDim, vElement, 'Agrupamento Nível 1' );
+AttrPutS( sNivel2, sDim, vElement, 'Agrupamento Nível 2' );
+
+sAlias = 'Código e Descrição';
+IF ( vElement @<> '' & sDescElement @<> '' );
+    AttrPutS( vElement | ' - ' | sDescElement, cDimensao, vElement, sAlias );
+ENDIF;
+#endregion
+#region Epilog
+# ===============================================================================================================
+#EPILOGCOMMENT  Descrição:  Registra o log de sucesso no cubo de controle SYS.150.
+# ===============================================================================================================
+cMensagemProcesso = 'Processo concluído com sucesso';
+CellPutS( TimSt( cHorarioInicio , '\Y-\m-\d \hh\im\ss' ), cCuboParametro, cProcesso, 'DataHora Fim' );
+CellPutS( cUsuario, cCuboParametro, cProcesso, 'Usuário' );
+CellPutS( cMensagemProcesso, cCuboParametro, cProcesso, 'Mensagem de Log' );
+CellPutS( sContadorRegistro, cCuboParametro, cProcesso, 'Registros Processados' );
+CellPutS( TimSt( Now - cHorarioInicio, ' \h:\i:\s'), cCuboParametro, cProcesso, 'Tempo de Execução' );
+#endregion

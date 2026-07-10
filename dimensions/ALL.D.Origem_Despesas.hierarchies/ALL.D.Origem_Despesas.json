@@ -1,0 +1,22 @@
+{
+	"@type":"Hierarchy",
+	"Name":"ALL.D.Origem_Despesas",
+	"Elements":
+	[
+		{ "Name":"OPX.100", "Type":"Numeric" },
+		{ "Name":"CAP.200", "Type":"Numeric" },
+		{ "Name":"REC.100", "Type":"Numeric" },
+		{ "Name":"FOL.100", "Type":"Numeric" },
+		{ "Name":"Realizado", "Type":"Numeric" },
+		{ "Name":"Total Origem Despesas", "Type":"Consolidated" }
+	],
+	"Edges":
+	[
+		{ "ParentName":"Total Origem Despesas", "ComponentName":"OPX.100", "Weight":1 },
+		{ "ParentName":"Total Origem Despesas", "ComponentName":"CAP.200", "Weight":1 },
+		{ "ParentName":"Total Origem Despesas", "ComponentName":"REC.100", "Weight":1 },
+		{ "ParentName":"Total Origem Despesas", "ComponentName":"FOL.100", "Weight":1 },
+		{ "ParentName":"Total Origem Despesas", "ComponentName":"Realizado", "Weight":1 }
+	],
+	"Subsets@Code.links":[]
+}

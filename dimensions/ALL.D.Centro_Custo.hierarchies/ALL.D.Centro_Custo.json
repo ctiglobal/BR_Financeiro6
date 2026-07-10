@@ -88,6 +88,10 @@
 		{
 			"Name":"Despesa",
 			"Type":"Consolidated"
+		},
+		{
+			"Name":"N/A",
+			"Type":"Numeric"
 		}
 	],
 	"Edges":
@@ -250,6 +254,11 @@
 		{
 			"ParentName":"Despesa",
 			"ComponentName":"SUPP0001",
+			"Weight":1
+		},
+		{
+			"ParentName":"Total Centro de Custo",
+			"ComponentName":"N/A",
 			"Weight":1
 		}
 	],

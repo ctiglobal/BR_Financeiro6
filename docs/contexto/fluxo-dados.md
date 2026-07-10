@@ -20,6 +20,12 @@ dos mapas de-para:
      rejeita linhas corrompidas para `SYS.160`)
   3. `DIM.040.2.cubo_MAP.040_para_dim_ALL.D.Cargos` (mapa → dimensão + atributos
      numéricos + alias `Código e Descrição`)
+- **Conta Contábil** — grupo `DIM.050.*`:
+  1. `DIM.050.0.Inicio_Atualizacao_Mapa_e_Dimensoes_Conta_Contabil` (orquestra;
+     chama antes `zCTI.Setup.Atributos_Conta_Contabil`)
+  2. `DIM.050.1.CSV_para_cubo_MAP.050.Conta_Contabil` (`Mapa_Conta_Contabil.csv` → cubo mapa)
+  3. `DIM.050.2.cubo_MAP.050_para_dim_ALL.D.Conta_Contabil` (mapa → dimensão com
+     hierarquia Agrupamento N1 → N2 → Conta + atributos + alias `Código e Descrição`)
 
 ## 2. Carga de transações
 
@@ -29,6 +35,12 @@ dos mapas de-para:
 - **Folha realizada** — `RH.020.0.CSV_para_cubo_FOL.100.Folha_Pagamento - Carga Realizado`
   (CSV `Base_Folha_Pagamento_Realizada_<Ano>_<Mês>` → `FOL.100`, versão `RE`,
   `Existente_Novo = Existentes`).
+- **Gasto (OPEX) realizado** — `OPX.010.0.CSV_para_cubo_OPX.900.Gasto_Consolidado - Carga Realizado`
+  (CSV `Base_Gastos_Realizado_<Ano>_<Mês>` → `OPX.900`, versão `RE`,
+  `Origem_Despesas = Realizado`). Ano/Mês vêm por parâmetro; o CSV traz só
+  `CC;Conta Contábil;Valor;Justificativa`. A projeção (T1/T2) do `OPX.900` **não** é
+  carregada — é calculada por regra a partir de `OPX.100`/`CAP.200`/`FOL.100`/`REC.100`
+  (ver `arquitetura-modelo.md`).
 
 Todas as cargas leem parâmetros de `SYS.150.Controle_Cargas` e gravam rejeições
 em `SYS.160.Rejeitados_Cargas`.
@@ -40,8 +52,9 @@ em `SYS.160.Rejeitados_Cargas`.
   `% INSS`/`% FGTS` default 20%/8%).
 - `zCTI.Seed.Time_Travel` — carga da tabela de lookup de deslocamento de período
   (`SYS.200.Time_Travel`), a partir do CSV em `model_upload/`. Estática; re-executável.
-- `zCTI.Setup.*` — atributos (Produto, Centro de Custo), controle de cargas
-  (inclui `zCTI.Setup.Controle_Cargas_FOL`), controle Real/Orçado.
+- `zCTI.Setup.*` — atributos (Produto, Centro de Custo, `Conta_Contabil`), controle de
+  cargas (inclui `zCTI.Setup.Controle_Cargas_FOL` e `zCTI.Setup.Controle_Cargas_OPX`),
+  controle Real/Orçado.
 
 ## 4. Cálculo e recálculo
 

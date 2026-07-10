@@ -1,0 +1,12 @@
+{
+	"@type":"Dimension",
+	"Name":"ALL.D.Origem_Despesas",
+	"Hierarchies@Code.links":
+	[
+		"ALL.D.Origem_Despesas.hierarchies/ALL.D.Origem_Despesas.json"
+	],
+	"DefaultHierarchy":
+	{
+		"@id":"Dimensions('ALL.D.Origem_Despesas')/Hierarchies('ALL.D.Origem_Despesas')"
+	}
+}

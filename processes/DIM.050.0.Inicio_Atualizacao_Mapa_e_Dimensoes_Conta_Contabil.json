@@ -1,0 +1,12 @@
+{
+	"@type":"Process",
+	"Name":"DIM.050.0.Inicio_Atualizacao_Mapa_e_Dimensoes_Conta_Contabil",
+	"HasSecurityAccess":false,
+	"Code@Code.link":"DIM.050.0.Inicio_Atualizacao_Mapa_e_Dimensoes_Conta_Contabil.ti",
+	"DataSource":
+	{
+		"Type":"None"
+	},
+	"Parameters":[],
+	"Variables":[]
+}

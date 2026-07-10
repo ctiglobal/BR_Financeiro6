@@ -1,0 +1,71 @@
+SKIPCHECK;
+
+# --------------------------------------------------------------------------------------------
+#Name  Gasto Consolidado — consolidação por Origem (rastreabilidade cross-módulo)
+#Desc  RE (realizado carregado na origem 'Realizado') e versões estáticas (F1..F11) ficam como
+#      input (STET). Nas versões dinâmicas (T1/T2), o $ Valor Gasto é puxado por regra dos cubos
+#      de origem: OPX.100 (colaborativo, mesmo CC×Conta), CAP.200 (Depreciação, conta 40000021),
+#      FOL.100 (contas de pessoal 40000001..07) e REC.100 (Frete, conta 40000018, no CC 'N/A').
+#      A virada Real×Orçado é herdada dos cubos de origem (REC.100 e FOL.100 já espelham RE nos
+#      meses marcados 'Real' em REC.000); OPX.100/CAP.200 são input por versão.
+#Date  08/07/2026
+#Author CTI Global
+# --------------------------------------------------------------------------------------------
+
+# --------------------------------------------------------------------------------------------
+#Name  Escopo de cálculo por versão
+#Desc  Só calcula nas versões dinâmicas (descendentes de 'Dynamic Versions' = T1/T2). RE e as
+#      estáticas F1..F11 permanecem como valor carregado/digitado (STET).
+# --------------------------------------------------------------------------------------------
+[]=IF( ELISANC( 'ALL.D.Versao', 'Dynamic Versions', !ALL.D.Versao ) <> 0, CONTINUE, STET );
+
+# --------------------------------------------------------------------------------------------
+#Name  Origem OPX.100 — Gasto Colaborativo
+#Desc  Espelha o input colaborativo no mesmo cruzamento Centro de Custo × Conta Contábil.
+# --------------------------------------------------------------------------------------------
+['OPX.100']=N:
+   DB('OPX.100.Gastos_Colaborativos', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, !ALL.D.Centro_Custo, !ALL.D.Conta_Contabil, '$ Valor Gasto');
+
+# --------------------------------------------------------------------------------------------
+#Name  Origem CAP.200 — Depreciação
+#Desc  Traz a $ Depreciação de Investimentos para a conta de Depreciação (40000021), por CC.
+# --------------------------------------------------------------------------------------------
+['CAP.200','40000021']=N:
+   DB('CAP.200.Investimentos', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, !ALL.D.Centro_Custo, '$ Depreciação');
+
+# --------------------------------------------------------------------------------------------
+#Name  Origem FOL.100 — Contas de Pessoal
+#Desc  Traz cada medida da Folha (somada em Total Existente e Novo × Total Cargos, por CC) para a
+#      conta contábil correspondente.
+# --------------------------------------------------------------------------------------------
+['FOL.100','40000001']=N:
+   DB('FOL.100.Folha_Pagamento', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Total Existente e Novo', !ALL.D.Centro_Custo, 'Total Cargos', '$ Salário');
+['FOL.100','40000002']=N:
+   DB('FOL.100.Folha_Pagamento', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Total Existente e Novo', !ALL.D.Centro_Custo, 'Total Cargos', '13º Salário');
+['FOL.100','40000003']=N:
+   DB('FOL.100.Folha_Pagamento', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Total Existente e Novo', !ALL.D.Centro_Custo, 'Total Cargos', '$ Férias');
+['FOL.100','40000004']=N:
+   DB('FOL.100.Folha_Pagamento', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Total Existente e Novo', !ALL.D.Centro_Custo, 'Total Cargos', '$ INSS');
+['FOL.100','40000005']=N:
+   DB('FOL.100.Folha_Pagamento', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Total Existente e Novo', !ALL.D.Centro_Custo, 'Total Cargos', '$ FGTS');
+['FOL.100','40000006']=N:
+   DB('FOL.100.Folha_Pagamento', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Total Existente e Novo', !ALL.D.Centro_Custo, 'Total Cargos', '$ Plano de Saúde');
+['FOL.100','40000007']=N:
+   DB('FOL.100.Folha_Pagamento', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Total Existente e Novo', !ALL.D.Centro_Custo, 'Total Cargos', '$ Vale Refeição');
+
+# --------------------------------------------------------------------------------------------
+#Name  Origem REC.100 — Frete
+#Desc  Traz o $ Frete total de Receita (Total Produtos × Total Estado × Total Canal) para a conta
+#      de Frete (40000018), no Centro de Custo 'N/A' (REC.100 não tem CC). Sinal invertido: em
+#      REC.100 o frete é custo (negativo); no gasto consolidado é positivo.
+# --------------------------------------------------------------------------------------------
+['REC.100','40000018','N/A']=N:
+   -1 * DB('REC.100.Receita', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'Total Produtos', 'Total Estado', 'Total Canal', '$ Frete');
+
+# --------------------------------------------------------------------------------------------
+#Name  FEEDERS
+#Desc  Os feeders das células calculadas de OPX.900 são declarados nos cubos de origem
+#      (OPX.100, CAP.200, FOL.100, REC.100), pois o feeder deve nascer na célula-fonte. Aqui não
+#      há feeder próprio: as consolidações de OPX.900 fecham a partir das folhas alimentadas.
+# --------------------------------------------------------------------------------------------
+FEEDERS;

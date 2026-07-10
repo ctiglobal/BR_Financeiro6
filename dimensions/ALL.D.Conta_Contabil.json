@@ -1,0 +1,12 @@
+{
+	"@type":"Dimension",
+	"Name":"ALL.D.Conta_Contabil",
+	"Hierarchies@Code.links":
+	[
+		"ALL.D.Conta_Contabil.hierarchies/ALL.D.Conta_Contabil.json"
+	],
+	"DefaultHierarchy":
+	{
+		"@id":"Dimensions('ALL.D.Conta_Contabil')/Hierarchies('ALL.D.Conta_Contabil')"
+	}
+}

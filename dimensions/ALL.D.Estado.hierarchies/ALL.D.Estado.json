@@ -3,114 +3,64 @@
 	"Name":"ALL.D.Estado",
 	"Elements":
 	[
-		{
-			"Name":"AC",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"AL",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"AM",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"AP",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"BA",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"CE",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"DF",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"ES",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"GO",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"MA",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"MG",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"MS",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"MT",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"PA",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"PB",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"PE",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"PI",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"PR",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"RJ",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"RN",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"RO",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"RR",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"RS",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"SC",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"SE",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"SP",
-			"Type":"Numeric"
-		},
-		{
-			"Name":"TO",
-			"Type":"Numeric"
-		}
+		{ "Name":"AC", "Type":"Numeric" },
+		{ "Name":"AL", "Type":"Numeric" },
+		{ "Name":"AM", "Type":"Numeric" },
+		{ "Name":"AP", "Type":"Numeric" },
+		{ "Name":"BA", "Type":"Numeric" },
+		{ "Name":"CE", "Type":"Numeric" },
+		{ "Name":"DF", "Type":"Numeric" },
+		{ "Name":"ES", "Type":"Numeric" },
+		{ "Name":"GO", "Type":"Numeric" },
+		{ "Name":"MA", "Type":"Numeric" },
+		{ "Name":"MG", "Type":"Numeric" },
+		{ "Name":"MS", "Type":"Numeric" },
+		{ "Name":"MT", "Type":"Numeric" },
+		{ "Name":"PA", "Type":"Numeric" },
+		{ "Name":"PB", "Type":"Numeric" },
+		{ "Name":"PE", "Type":"Numeric" },
+		{ "Name":"PI", "Type":"Numeric" },
+		{ "Name":"PR", "Type":"Numeric" },
+		{ "Name":"RJ", "Type":"Numeric" },
+		{ "Name":"RN", "Type":"Numeric" },
+		{ "Name":"RO", "Type":"Numeric" },
+		{ "Name":"RR", "Type":"Numeric" },
+		{ "Name":"RS", "Type":"Numeric" },
+		{ "Name":"SC", "Type":"Numeric" },
+		{ "Name":"SE", "Type":"Numeric" },
+		{ "Name":"SP", "Type":"Numeric" },
+		{ "Name":"TO", "Type":"Numeric" },
+		{ "Name":"Total Estado", "Type":"Consolidated" }
+	],
+	"Edges":
+	[
+		{ "ParentName":"Total Estado", "ComponentName":"AC", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"AL", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"AM", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"AP", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"BA", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"CE", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"DF", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"ES", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"GO", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"MA", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"MG", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"MS", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"MT", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"PA", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"PB", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"PE", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"PI", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"PR", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"RJ", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"RN", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"RO", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"RR", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"RS", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"SC", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"SE", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"SP", "Weight":1 },
+		{ "ParentName":"Total Estado", "ComponentName":"TO", "Weight":1 }
 	],
 	"Subsets@Code.links":[]
 }

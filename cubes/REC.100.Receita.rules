@@ -184,3 +184,7 @@ FEEDERS;
 ['RE','$ Receita Bruta'] =>
    DB('REC.100.Receita', !ALL.D.Ano, !ALL.D.Mes, 'T1', !ALL.D.Produto, !ALL.D.Estado, !ALL.D.Canal, '$ Receita Bruta'),
    DB('REC.100.Receita', !ALL.D.Ano, !ALL.D.Mes, 'T2', !ALL.D.Produto, !ALL.D.Estado, !ALL.D.Canal, '$ Receita Bruta');
+
+# --- Feeder cross-cubo: alimenta OPX.900.Gasto_Consolidado (origem REC.100, conta Frete 40000018, CC 'N/A') ---
+['$ Frete'] =>
+   DB('OPX.900.Gasto_Consolidado', !ALL.D.Ano, !ALL.D.Mes, !ALL.D.Versao, 'N/A', '40000018', 'REC.100', '$ Valor Gasto');

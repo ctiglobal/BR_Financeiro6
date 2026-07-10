@@ -1,0 +1,18 @@
+{
+	"@type":"Process",
+	"Name":"DIM.050.2.cubo_MAP.050_para_dim_ALL.D.Conta_Contabil",
+	"HasSecurityAccess":false,
+	"Code@Code.link":"DIM.050.2.cubo_MAP.050_para_dim_ALL.D.Conta_Contabil.ti",
+	"DataSource":
+	{
+		"Type":"TM1DimensionSubset",
+		"dataSourceNameForClient":"",
+		"dataSourceNameForServer":"MAP.D.050.Conta_Contabil",
+		"subset":"zAll"
+	},
+	"Parameters":[],
+	"Variables":
+	[
+		{ "Name":"vElement", "Type":"String", "Position":1, "StartByte":0, "EndByte":0 }
+	]
+}
